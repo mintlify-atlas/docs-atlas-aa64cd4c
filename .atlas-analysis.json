@@ -1,0 +1,159 @@
+{
+  "projectType": "saas",
+  "projectName": "Mezo",
+  "projectDescription": "Bitcoin-backed financial platform enabling self-service banking through staking, borrowing, and DeFi protocols built on Bitcoin.",
+  "theme": "aspen",
+  "primaryColor": "#FF004D",
+  "lightColor": "#FF7399",
+  "darkColor": "#CC0040",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Users",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "getting-started/creating-an-account",
+              "getting-started/connect-wallet",
+              "getting-started/deposit-assets"
+            ]
+          },
+          {
+            "group": "Introduction",
+            "pages": [
+              "introduction/why-bitcoin-needs-banking",
+              "introduction/self-service-banking"
+            ]
+          },
+          {
+            "group": "MUSD Stablecoin",
+            "pages": [
+              "musd/overview",
+              "musd/mint-musd",
+              "musd/fees",
+              "musd/architecture",
+              "musd/liquidation",
+              "musd/bridge"
+            ]
+          },
+          {
+            "group": "MEZO Token",
+            "pages": [
+              "mezo/overview",
+              "mezo/token-distribution",
+              "mezo/emissions",
+              "mezo/governance",
+              "mezo/bridge"
+            ]
+          },
+          {
+            "group": "Mezo Earn",
+            "pages": [
+              "earn/overview",
+              "earn/glossary",
+              "earn/vebtc-locking",
+              "earn/vemezo-locking",
+              "earn/voting",
+              "earn/liquidity-pools",
+              "earn/vaults"
+            ]
+          },
+          {
+            "group": "Mainnet",
+            "pages": [
+              "mainnet/bridges",
+              "mainnet/track-deposits"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "resources/faqs",
+              "resources/glossary",
+              "resources/audits",
+              "resources/contracts",
+              "resources/network-stats",
+              "resources/support"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Developers",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "developers/overview",
+              "developers/getting-started/environment",
+              "developers/getting-started/mezod",
+              "developers/getting-started/dapp-requirements",
+              "developers/getting-started/mezo-passport",
+              "developers/getting-started/integrations"
+            ]
+          },
+          {
+            "group": "Mezo Nodes",
+            "pages": [
+              "developers/nodes/overview",
+              "developers/nodes/validator-kit",
+              "developers/nodes/validators"
+            ]
+          },
+          {
+            "group": "Architecture",
+            "pages": [
+              "developers/architecture/oracles",
+              "developers/architecture/read-oracle"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "developers/features/mezo-earn",
+              "developers/features/mezo-pools",
+              "developers/features/deploying-incentives"
+            ]
+          },
+          {
+            "group": "Bridge & MUSD",
+            "pages": [
+              "developers/bridge/mezo-bridge",
+              "developers/bridge/wormhole-musd",
+              "developers/musd/overview",
+              "developers/musd/redemptions"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "developers/reference/chains",
+              "developers/reference/subgraphs"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "MUSD Bitcoin-backed stablecoin with 1-5% fixed rates",
+    "Mezo Earn staking platform with veBTC and veMEZO locks",
+    "Native Bitcoin deposits via bridges with tracking",
+    "Liquidity pools and automated market maker",
+    "Governance with MEZO token voting",
+    "Developer-friendly EVM-compatible layer"
+  ],
+  "publicApiSurface": [
+    "MUSD minting and redemption",
+    "veBTC and veMEZO token locking",
+    "Liquidity pool interactions",
+    "Native Bitcoin bridge deposits",
+    "Wormhole cross-chain bridge",
+    "Oracle price feeds",
+    "Mezo Passport authentication",
+    "Smart contract deployments",
+    "Subgraph queries"
+  ]
+}
