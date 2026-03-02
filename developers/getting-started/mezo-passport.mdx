@@ -1,0 +1,402 @@
+---
+title: Mezo Passport Setup
+description: Integrate Mezo Passport to support both Bitcoin and EVM wallets in your dApp.
+---
+
+[Mezo Passport](https://www.npmjs.com/package/@mezo-org/passport) is a package built on top of [RainbowKit](https://rainbowkit.com/) that provides additional wallet connection options specifically tailored for Bitcoin wallets and Mezo. With this package, developers can integrate Bitcoin wallet support alongside Ethereum-compatible (EVM) wallets to create a more versatile connection experience for users.
+
+Passport integrates with [viem](https://viem.sh/) and [wagmi](https://wagmi.sh/) libraries for streamlined wallet management across Bitcoin and EVM ecosystems.
+
+<Note>
+If you cannot use Mezo Passport for your dApp, the configuration steps in the [Configure your Environment](/getting-started/environment) guide are sufficient for traditional EVM development.
+</Note>
+
+## Before You Begin
+
+<CardGroup cols={2}>
+  <Card title="Configure Environment" icon="code" href="/developers/getting-started/environment">
+    Set up development with Hardhat or Foundry
+  </Card>
+  
+  <Card title="RainbowKit Documentation" icon="rainbow" href="https://www.rainbowkit.com/">
+    Learn the basics of RainbowKit
+  </Card>
+</CardGroup>
+
+## Installation
+
+Install Mezo Passport and its peer dependencies:
+
+```bash
+npm install @mezo-org/passport @rainbow-me/rainbowkit wagmi viem@2.x @tanstack/react-query
+```
+
+<Note>
+Make sure to install viem version 2.x as specified. Version 3.x may have compatibility issues.
+</Note>
+
+## Configuration
+
+### Basic Setup
+
+Use the `getConfig` method from `@mezo-org/passport` to configure your `WagmiProvider`.
+
+```tsx index.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { getConfig, mezoTestnet } from "@mezo-org/passport";
+import "@rainbow-me/rainbowkit/styles.css";
+
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <WagmiProvider config={getConfig({ appName: "Your Mezo dApp" })}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider initialChain={mezoTestnet}>
+          {/* Your App component */}
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  </React.StrictMode>,
+);
+```
+
+### Configuration Options
+
+The `getConfig` function accepts the following options:
+
+```typescript
+interface ConfigOptions {
+  appName: string;           // Your dApp name (required)
+  projectId?: string;        // WalletConnect project ID (optional)
+  chains?: Chain[];          // Custom chain configurations (optional)
+}
+```
+
+### Using Mainnet
+
+To use Mezo Mainnet instead of Testnet:
+
+```tsx
+import { getConfig, mezoMainnet } from "@mezo-org/passport";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <WagmiProvider config={getConfig({ appName: "Your Mezo dApp" })}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider initialChain={mezoMainnet}>
+          {/* Your App component */}
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  </React.StrictMode>,
+);
+```
+
+### Multi-Network Support
+
+Support both Testnet and Mainnet:
+
+```tsx
+import { getConfig, mezoTestnet, mezoMainnet } from "@mezo-org/passport";
+
+const config = getConfig({
+  appName: "Your Mezo dApp",
+  chains: [mezoTestnet, mezoMainnet]
+});
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider initialChain={mezoTestnet}>
+          {/* Your App component */}
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  </React.StrictMode>,
+);
+```
+
+## Connecting Wallets
+
+To connect to wallets, use the standard Wagmi or RainbowKit components.
+
+### Using Wagmi
+
+```tsx YourApp.tsx
+import { useChainId, useConnect } from "wagmi";
+
+export const YourApp = () => {
+  const chainId = useChainId();
+  const { connectors, connect } = useConnect();
+
+  return (
+    <div>
+      {connectors.map((connector) => (
+        <button
+          type="button"
+          onClick={() => {
+            connect({ connector, chainId });
+          }}
+          key={connector.id}
+        >
+          {connector.name}
+        </button>
+      ))}
+    </div>
+  );
+};
+```
+
+### Using RainbowKit
+
+```tsx YourApp.tsx
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
+export const YourApp = () => {
+  return <ConnectButton label="Connect wallet" />;
+};
+```
+
+### Custom Connect Button
+
+Create a custom styled connect button:
+
+```tsx CustomConnectButton.tsx
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
+export const CustomConnectButton = () => {
+  return (
+    <ConnectButton.Custom>
+      {({
+        account,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        mounted,
+      }) => {
+        const ready = mounted;
+        const connected = ready && account && chain;
+
+        return (
+          <div
+            {...(!ready && {
+              'aria-hidden': true,
+              style: {
+                opacity: 0,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              },
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <button onClick={openConnectModal} type="button">
+                    Connect Wallet
+                  </button>
+                );
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <button onClick={openChainModal} type="button">
+                    Wrong network
+                  </button>
+                );
+              }
+
+              return (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button onClick={openChainModal} type="button">
+                    {chain.hasIcon && (
+                      <div
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                        }}
+                      >
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            style={{ width: 12, height: 12 }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {chain.name}
+                  </button>
+
+                  <button onClick={openAccountModal} type="button">
+                    {account.displayName}
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        );
+      }}
+    </ConnectButton.Custom>
+  );
+};
+```
+
+## Supported Wallets
+
+Mezo Passport supports the following wallet types:
+
+### Bitcoin Wallets
+- Xverse
+- Unisat
+- Leather (formerly Hiro Wallet)
+- OKX Wallet
+
+### EVM Wallets
+- MetaMask
+- Coinbase Wallet
+- WalletConnect
+- Rainbow Wallet
+- Trust Wallet
+- And all other RainbowKit supported wallets
+
+## Using Wagmi Hooks
+
+Mezo Passport is fully compatible with Wagmi hooks:
+
+```tsx
+import { useAccount, useBalance, useContractRead, useContractWrite } from "wagmi";
+
+export const MyComponent = () => {
+  const { address, isConnected } = useAccount();
+  const { data: balance } = useBalance({ address });
+
+  return (
+    <div>
+      {isConnected ? (
+        <>
+          <p>Connected: {address}</p>
+          <p>Balance: {balance?.formatted} {balance?.symbol}</p>
+        </>
+      ) : (
+        <p>Not connected</p>
+      )}
+    </div>
+  );
+};
+```
+
+## Advanced Configuration
+
+### Custom Chains
+
+```tsx
+import { Chain } from "wagmi";
+import { getConfig } from "@mezo-org/passport";
+
+const customChain: Chain = {
+  id: 31611,
+  name: "Custom Mezo Network",
+  network: "mezo-custom",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Bitcoin",
+    symbol: "BTC",
+  },
+  rpcUrls: {
+    default: { http: ["https://custom-rpc.mezo.org"] },
+    public: { http: ["https://custom-rpc.mezo.org"] },
+  },
+  blockExplorers: {
+    default: { name: "Explorer", url: "https://custom-explorer.mezo.org" },
+  },
+};
+
+const config = getConfig({
+  appName: "Your Mezo dApp",
+  chains: [customChain]
+});
+```
+
+### WalletConnect Project ID
+
+For production applications, provide your own WalletConnect project ID:
+
+```tsx
+const config = getConfig({
+  appName: "Your Mezo dApp",
+  projectId: "YOUR_WALLETCONNECT_PROJECT_ID"
+});
+```
+
+Get your project ID from [WalletConnect Cloud](https://cloud.walletconnect.com/).
+
+## Styling
+
+Mezo Passport uses RainbowKit's styling system. Customize the theme:
+
+```tsx
+import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
+
+<RainbowKitProvider
+  theme={darkTheme({
+    accentColor: '#7b3fe4',
+    accentColorForeground: 'white',
+    borderRadius: 'medium',
+  })}
+>
+  {/* Your App */}
+</RainbowKitProvider>
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Wallet not connecting">
+    - Ensure you have the wallet extension installed
+    - Check that you're on the correct network (Mezo Testnet or Mainnet)
+    - Clear browser cache and try again
+    - Check browser console for error messages
+  </Accordion>
+
+  <Accordion title="Wrong network error">
+    - Use the chain switcher to change to Mezo network
+    - Ensure your RPC endpoints are configured correctly
+    - Verify the chain ID matches (31611 for Testnet, 31612 for Mainnet)
+  </Accordion>
+
+  <Accordion title="Transaction failures">
+    - Ensure you have sufficient BTC for gas fees
+    - Check that your contract addresses are correct
+    - Verify gas estimation is working properly
+    - Review transaction parameters
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="NPM Package" icon="npm" href="https://www.npmjs.com/package/@mezo-org/passport">
+    View the Mezo Passport NPM package for additional examples
+  </Card>
+  
+  <Card title="RainbowKit Docs" icon="rainbow" href="https://www.rainbowkit.com/">
+    Learn more about RainbowKit customization options
+  </Card>
+  
+  <Card title="Wagmi Documentation" icon="book" href="https://wagmi.sh/">
+    Explore Wagmi hooks and utilities
+  </Card>
+  
+  <Card title="Deploy Your dApp" icon="rocket" href="/developers/developers/getting-started/dapp-requirements">
+    Review requirements for Mezo Market listing
+  </Card>
+</CardGroup>

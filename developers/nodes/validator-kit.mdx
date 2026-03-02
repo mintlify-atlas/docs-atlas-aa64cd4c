@@ -1,0 +1,529 @@
+---
+title: Validator Kit
+description: Complete guide for setting up and running Mezo validator nodes using the validator kit
+---
+
+The Mezo Validator Kit provides a comprehensive solution for running Mezo nodes, including validators, RPC nodes, and seed nodes. This guide covers setup, configuration, and maintenance of Mezo infrastructure.
+
+## Overview
+
+The [Validator Kit](https://github.com/mezo-org/validator-kit) simplifies the deployment of Mezo nodes with multiple deployment options:
+
+- **Docker**: Containerized deployment
+- **Native Daemon**: Direct system installation
+- **Kubernetes**: Helm charts for orchestration
+- **Cloud Deployment**: AWS, GCP, Azure support
+
+### Node Types
+
+1. **Validator Nodes**: Participate in consensus and block production
+2. **RPC Nodes**: Provide API endpoints for dApps
+3. **Seed Nodes**: Help bootstrap the network
+
+## Repository Structure
+
+The [Validator Kit repository](https://github.com/mezo-org/validator-kit) includes:
+
+- **[Docker Configuration](https://github.com/mezo-org/validator-kit/tree/main/docker)**: Container setup and orchestration
+- **[Kubernetes Manifests](https://github.com/mezo-org/validator-kit/tree/main/kubernetes)**: Helm charts and K8s resources
+- **[Configuration Templates](https://github.com/mezo-org/validator-kit/tree/main/configs)**: Node configuration files
+- **[Monitoring](https://github.com/mezo-org/validator-kit/tree/main/monitoring)**: Prometheus, Grafana, and alerting
+- **[Scripts](https://github.com/mezo-org/validator-kit/tree/main/scripts)**: Automation and maintenance tools
+
+## Hardware Requirements
+
+### Minimum Requirements
+
+**Validator Node**:
+- CPU: 4 cores
+- RAM: 8GB
+- Storage: 100GB SSD
+- Network: 100 Mbps
+
+**RPC Node**:
+- CPU: 2 cores
+- RAM: 4GB
+- Storage: 50GB SSD
+- Network: 50 Mbps
+
+**Seed Node**:
+- CPU: 1 core
+- RAM: 2GB
+- Storage: 20GB SSD
+- Network: 10 Mbps
+
+### Recommended Requirements
+
+**Validator Node**:
+- CPU: 8 cores
+- RAM: 16GB
+- Storage: 500GB NVMe SSD
+- Network: 1 Gbps
+
+<Note>
+For production validator nodes, we strongly recommend using the recommended specifications to ensure optimal performance and reliability.
+</Note>
+
+## Installation Methods
+
+### Docker Deployment
+
+<Steps>
+  <Step title="Clone Repository">
+    Clone the validator kit repository:
+    
+    ```bash
+    git clone https://github.com/mezo-org/validator-kit.git
+    cd validator-kit
+    ```
+  </Step>
+
+  <Step title="Configure Environment">
+    Copy the example environment file and edit it with your configuration:
+    
+    ```bash
+    cp .env.example .env
+    # Edit .env with your configuration
+    ```
+  </Step>
+
+  <Step title="Start Node">
+    Start your node using Docker Compose:
+    
+    ```bash
+    docker-compose up -d
+    ```
+  </Step>
+</Steps>
+
+### Native Installation
+
+<Steps>
+  <Step title="Install Dependencies">
+    Install required dependencies and Go:
+    
+    <CodeGroup>
+    ```bash Ubuntu/Debian
+    sudo apt update
+    sudo apt install -y curl git make build-essential
+
+    # Install Go
+    curl -fsSL https://go.dev/dl/go1.21.0.linux-amd64.tar.gz | sudo tar -xzC /usr/local
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Build Mezod">
+    Clone and build the mezod client:
+    
+    ```bash
+    git clone https://github.com/mezo-org/mezod.git
+    cd mezod
+    make build
+    ```
+  </Step>
+
+  <Step title="Configure Node">
+    Initialize your node:
+    
+    ```bash
+    ./mezod init mynode --chain-id mezo-testnet
+    ```
+  </Step>
+</Steps>
+
+### Kubernetes Deployment
+
+<Steps>
+  <Step title="Install Helm">
+    Install Helm package manager:
+    
+    ```bash
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    ```
+  </Step>
+
+  <Step title="Deploy with Helm">
+    Deploy your node using the Helm chart:
+    
+    ```bash
+    helm install mezo-node ./helm/mezo-node \
+      --set node.type=validator \
+      --set node.name=my-validator
+    ```
+  </Step>
+</Steps>
+
+## Configuration
+
+### Node Configuration
+
+<CodeGroup>
+```toml config.toml
+[consensus]
+timeout_commit = "1s"
+timeout_propose = "3s"
+
+[p2p]
+laddr = "tcp://0.0.0.0:26656"
+external_address = "YOUR_EXTERNAL_IP:26656"
+persistent_peers = "peer1@ip1:26656,peer2@ip2:26656"
+```
+
+```toml app.toml
+[api]
+enable = true
+address = "tcp://0.0.0.0:1317"
+
+[grpc]
+enable = true
+address = "0.0.0.0:9090"
+
+[evm]
+rpc_address = "0.0.0.0:8545"
+ws_address = "0.0.0.0:8546"
+```
+</CodeGroup>
+
+### Environment Variables
+
+```bash .env
+# Node configuration
+NODE_TYPE=validator
+CHAIN_ID=mezo-mainnet
+MONIKER=my-validator
+
+# Network configuration
+P2P_PORT=26656
+RPC_PORT=26657
+API_PORT=1317
+GRPC_PORT=9090
+EVM_RPC_PORT=8545
+
+# Security
+PRIV_VALIDATOR_KEY_FILE=/config/priv_validator_key.json
+NODE_KEY_FILE=/config/node_key.json
+```
+
+## Validator Setup
+
+### Prerequisites
+
+<Steps>
+  <Step title="Proof of Authority (PoA)">
+    Apply for validator status through the official channels
+  </Step>
+
+  <Step title="Stake Requirements">
+    Ensure you meet the minimum stake amount
+  </Step>
+
+  <Step title="Technical Requirements">
+    Verify your hardware meets the specifications
+  </Step>
+</Steps>
+
+### Validator Configuration
+
+<CodeGroup>
+```bash Initialize
+# Initialize validator
+./mezod init validator --chain-id mezo-mainnet
+```
+
+```bash Create Key
+# Create validator key
+./mezod keys add validator --keyring-backend file
+```
+
+```bash Create Validator
+# Create validator transaction
+./mezod tx staking create-validator \
+  --amount=1000000umezo \
+  --pubkey=$(./mezod tendermint show-validator) \
+  --moniker="My Validator" \
+  --chain-id=mezo-mainnet \
+  --from=validator
+```
+</CodeGroup>
+
+<Warning>
+Never commit validator keys to version control! Store them securely using hardware security modules (HSM) or secure key management systems.
+</Warning>
+
+## RPC Node Setup
+
+### Purpose
+
+RPC nodes provide:
+- **API Endpoints**: REST and gRPC APIs
+- **EVM RPC**: Ethereum-compatible JSON-RPC
+- **WebSocket**: Real-time data streams
+- **Load Balancing**: Distribute traffic across nodes
+
+### Configuration
+
+```yaml docker-compose.yml
+version: '3.8'
+services:
+  rpc-node:
+    image: mezod:latest
+    ports:
+      - "26657:26657"  # Tendermint RPC
+      - "1317:1317"    # Cosmos API
+      - "9090:9090"    # gRPC
+      - "8545:8545"    # EVM RPC
+    environment:
+      - NODE_TYPE=rpc
+      - CHAIN_ID=mezo-mainnet
+    volumes:
+      - ./data:/root/.mezod
+```
+
+## Monitoring and Observability
+
+### Prometheus Configuration
+
+```yaml prometheus.yml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'mezod'
+    static_configs:
+      - targets: ['localhost:26660']
+    metrics_path: /metrics
+```
+
+### Key Metrics
+
+Monitor these critical metrics for your node:
+
+- **Block Height**: Current blockchain height
+- **Validator Status**: Active/inactive status
+- **Network Connectivity**: Peer connections
+- **Resource Usage**: CPU, memory, disk
+- **Transaction Throughput**: TPS metrics
+
+### Alerting Rules
+
+```yaml alerts.yml
+groups:
+  - name: mezod
+    rules:
+      - alert: NodeDown
+        expr: up{job="mezod"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Mezod node is down"
+```
+
+## Security Best Practices
+
+### Network Security
+
+<Steps>
+  <Step title="Firewall Configuration">
+    Configure firewall to allow only necessary ports:
+    
+    ```bash
+    # Allow only necessary ports
+    ufw allow 26656/tcp  # P2P
+    ufw allow 26657/tcp  # RPC
+    ufw allow 1317/tcp   # API
+    ufw allow 8545/tcp   # EVM RPC
+    ```
+  </Step>
+
+  <Step title="Access Control">
+    Restrict RPC access to trusted IPs:
+    
+    ```bash
+    # Restrict RPC access
+    iptables -A INPUT -p tcp --dport 26657 -s TRUSTED_IP -j ACCEPT
+    iptables -A INPUT -p tcp --dport 26657 -j DROP
+    ```
+  </Step>
+</Steps>
+
+### Key Management
+
+1. **Secure Storage**: Use hardware security modules (HSM)
+2. **Backup Strategy**: Regular key backups
+3. **Access Control**: Limit key access permissions
+
+<Warning>
+Never commit validator keys to version control! This is critical for maintaining the security of your validator.
+</Warning>
+
+## Maintenance
+
+### Regular Tasks
+
+<CodeGroup>
+```bash Software Updates
+# Update mezod
+git pull origin main
+make build
+systemctl restart mezod
+```
+
+```bash Database Maintenance
+# Prune old data (use with caution)
+./mezod tendermint unsafe-reset-all
+```
+
+```bash Log Rotation
+# Configure logrotate
+cat > /etc/logrotate.d/mezod << EOF
+/var/log/mezod/*.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+}
+EOF
+```
+</CodeGroup>
+
+### Backup Strategy
+
+<Steps>
+  <Step title="Configuration Backup">
+    Backup your node configuration:
+    
+    ```bash
+    tar -czf config-backup.tar.gz ~/.mezod/config/
+    ```
+  </Step>
+
+  <Step title="Key Backup">
+    Backup validator keys to a secure location:
+    
+    ```bash
+    # Backup validator keys to secure location
+    cp ~/.mezod/config/priv_validator_key.json /secure/backup/
+    ```
+    
+    <Warning>
+    Store key backups in a secure, offline location with appropriate encryption and access controls.
+    </Warning>
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Sync Issues">
+    Check sync status and reset if needed:
+    
+    ```bash
+    # Check sync status
+    ./mezod status
+
+    # Reset and resync
+    ./mezod tendermint unsafe-reset-all
+    ```
+  </Accordion>
+
+  <Accordion title="Connection Problems">
+    Verify peer connections:
+    
+    ```bash
+    # Check peer connections
+    ./mezod tendermint show-node-id
+
+    # Update persistent peers in config.toml
+    ```
+  </Accordion>
+
+  <Accordion title="Performance Issues">
+    Monitor resource usage:
+    
+    ```bash
+    # Monitor resource usage
+    htop
+    iotop
+    netstat -tulpn
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Debug Commands
+
+<CodeGroup>
+```bash View Logs
+journalctl -u mezod -f
+```
+
+```bash Check Status
+./mezod status
+```
+
+```bash View Config
+./mezod config
+```
+
+```bash Test RPC
+curl http://localhost:26657/status
+```
+</CodeGroup>
+
+## Development Integration
+
+### Local Development
+
+<Steps>
+  <Step title="Start Local Node">
+    Start a local development node:
+    
+    ```bash
+    docker-compose -f docker-compose.dev.yml up
+    ```
+  </Step>
+
+  <Step title="Connect dApp">
+    Connect your dApp to the local node:
+    
+    ```javascript
+    const provider = new ethers.JsonRpcProvider('http://localhost:8545');
+    ```
+  </Step>
+</Steps>
+
+### Testing Environment
+
+<CodeGroup>
+```bash Testnet Node
+./mezod init testnode --chain-id mezo-testnet
+```
+
+```bash Integration Tests
+npm test
+```
+</CodeGroup>
+
+## Additional Resources
+
+- [Validator Kit Repository](https://github.com/mezo-org/validator-kit) - Main repository
+- [Mezod Repository](https://github.com/mezo-org/mezod) - Chain client
+- [Mezo Nodes Overview](/nodes/overview) - Node operations
+- [Docker Documentation](https://docs.docker.com/) - Docker reference
+- [Kubernetes Documentation](https://kubernetes.io/docs/) - K8s reference
+
+<Note>
+For detailed validator requirements, application processes, and advanced configurations, refer to the [validator kit repository](https://github.com/mezo-org/validator-kit) documentation.
+</Note>
+
+## Support
+
+For validator support:
+- Join the [Mezo Discord](https://discord.com/invite/mezo)
+- Check the [GitHub Issues](https://github.com/mezo-org/validator-kit/issues)
+- Review the [FAQ](/getting-started/faqs)

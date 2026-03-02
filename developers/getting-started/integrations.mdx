@@ -1,0 +1,221 @@
+---
+title: Mezo Integrations & Partners
+description: Discover the services, dApps, and partners integrated with Mezo ecosystem.
+---
+
+Several organizations are partnering with Mezo to bring their dApps and services to the network. These integrations provide essential infrastructure and tooling for developers building on Mezo.
+
+## Oracle Providers
+
+### Pyth Network
+
+The [Pyth Network](https://pyth.network/) is one of the largest first-party Oracle networks and delivers real-time data across several chains including Mezo. Pyth introduces an innovative low-latency [pull oracle design](https://docs.pyth.network/documentation/pythnet-price-feeds/on-demand) where users can pull price updates onchain when needed. This enables everyone in the onchain environment to access data points efficiently.
+
+<Note>
+The Pyth network updates prices every 400ms, making Pyth one of the fastest onchain oracles.
+</Note>
+
+**Deployed Contracts:**
+
+| Network | Contract Address | Explorer |
+|---------|-----------------|----------|
+| Mezo Mainnet | `0x2880aB155794e7179c9eE2e38200202908C17B43` | [View on Explorer](https://explorer.mezo.org/address/0x2880aB155794e7179c9eE2e38200202908C17B43) |
+| Mezo Testnet | `0x2880aB155794e7179c9eE2e38200202908C17B43` | [View on Explorer](https://explorer.test.mezo.org/address/0x2880aB155794e7179c9eE2e38200202908C17B43) |
+
+<CardGroup cols={2}>
+  <Card title="Pyth Documentation" icon="book" href="https://docs.pyth.network/home">
+    Learn how to use Pyth in your dApp
+  </Card>
+  
+  <Card title="Price Feeds" icon="chart-line" href="https://pyth.network/developers/price-feed-ids">
+    Browse available price feeds
+  </Card>
+</CardGroup>
+
+### Stork Oracle
+
+Stork is an oracle protocol that enables ultra low latency connections between data providers and both on and off-chain applications. The most common use-case for Stork is pulling and consuming market data in the form of real time price feeds for DeFi.
+
+Stork [is available on Mezo Testnet](https://docs.stork.network/resources/contract-addresses/evm#mezo).
+
+<CardGroup cols={2}>
+  <Card title="Stork Documentation" icon="book" href="https://docs.stork.network/">
+    Complete Stork integration guide
+  </Card>
+  
+  <Card title="Contract Addresses" icon="file-contract" href="https://docs.stork.network/resources/contract-addresses/evm#mezo">
+    Deployed contracts on Mezo Testnet
+  </Card>
+</CardGroup>
+
+### Supra Oracles
+
+Supra is a cross-chain oracle network designed to power dApps across blockchain ecosystems with fast, secure, decentralized, and scalable data solutions. Supra's [Distributed Oracle Agreement (DORA)](https://docs.supra.com/oracles/data-feeds#distributed-oracle-agreement-dora) is available on Mezo Testnet.
+
+<Note>
+See Supra's [Available Networks](https://docs.supra.com/oracles/data-feeds/pull-oracle/networks) page to find the correct pull contract and storage contract addresses for Mezo.
+</Note>
+
+<Card title="Supra Documentation" icon="book" href="https://docs.supra.com/">
+  Learn how to integrate Supra oracles
+</Card>
+
+## Indexing Services
+
+### Goldsky
+
+Goldsky is an indexer for web3 builders that offers subgraph hosting and realtime data replication pipelines. Goldsky [is available on Mezo Testnet](https://docs.goldsky.com/chains/supported-networks) using the slug `mezo-testnet`.
+
+**Features:**
+- Subgraph hosting and deployment
+- Real-time data replication
+- High-performance indexing
+- GraphQL API endpoints
+
+<Card title="Goldsky Documentation" icon="book" href="https://docs.goldsky.com/">
+  Get started with Goldsky indexing
+</Card>
+
+## Wallet Infrastructure
+
+### Onchain Den
+
+Den provides a self-custodial multi-signature wallet for onchain organizations, and is available on Mezo. Onchain Den also worked with Mezo to provide SAFE infrastructure at [safe.mezo.org](http://safe.mezo.org/).
+
+**Features:**
+- Multi-signature wallet support
+- Organization treasury management
+- Transaction batching
+- Role-based access control
+
+<CardGroup cols={2}>
+  <Card title="Den Documentation" icon="book" href="https://docs.onchainden.com/overview/den">
+    Learn about Den multi-sig wallets
+  </Card>
+  
+  <Card title="Mezo Safe" icon="shield" href="http://safe.mezo.org/">
+    Access Safe infrastructure on Mezo
+  </Card>
+</CardGroup>
+
+## Integration Examples
+
+### Using Pyth Price Feeds
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@pythnetwork/pyth-sdk-solidity/IPyth.sol";
+import "@pythnetwork/pyth-sdk-solidity/PythStructs.sol";
+
+contract MyDeFiApp {
+    IPyth pyth;
+    
+    constructor(address pythContract) {
+        pyth = IPyth(pythContract);
+    }
+    
+    function getBTCPrice(bytes[] calldata priceUpdate) public payable returns (uint256) {
+        // Update the price feeds
+        uint fee = pyth.getUpdateFee(priceUpdate);
+        pyth.updatePriceFeeds{value: fee}(priceUpdate);
+        
+        // Read the current price
+        bytes32 priceId = 0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43; // BTC/USD
+        PythStructs.Price memory price = pyth.getPrice(priceId);
+        
+        return uint256(uint64(price.price));
+    }
+}
+```
+
+### Querying Goldsky Subgraph
+
+```typescript
+import { request, gql } from 'graphql-request';
+
+const SUBGRAPH_URL = 'https://api.goldsky.com/api/public/project_<your-project-id>/subgraphs/mezo-testnet/<version>/gn';
+
+const query = gql`
+  query {
+    tokens(first: 10) {
+      id
+      name
+      symbol
+      decimals
+    }
+  }
+`;
+
+const data = await request(SUBGRAPH_URL, query);
+console.log(data);
+```
+
+### Integrating Stork Oracle
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@stork-oracle/stork-external/IStorkPriceOracle.sol";
+
+contract MyContract {
+    IStorkPriceOracle public storkOracle;
+    
+    constructor(address _storkOracle) {
+        storkOracle = IStorkPriceOracle(_storkOracle);
+    }
+    
+    function getLatestPrice(bytes32 feedId) public view returns (uint256) {
+        (uint256 price, uint256 timestamp) = storkOracle.getLatestPrice(feedId);
+        return price;
+    }
+}
+```
+
+## Become a Partner
+
+Interested in integrating your service with Mezo? We welcome partnerships that bring value to the Mezo ecosystem.
+
+<Steps>
+  <Step title="Review Requirements">
+    Ensure your service meets the [dApp Requirements](/developers/getting-started/dapp-requirements) for ecosystem integration.
+  </Step>
+  
+  <Step title="Test Integration">
+    Deploy and test your integration on Mezo Testnet first.
+  </Step>
+  
+  <Step title="Submit Proposal">
+    Reach out through the [Mezo Discord](https://discord.com/invite/mezo) or contact the [Supernormal Foundation](https://www.supernormal.foundation/page).
+  </Step>
+  
+  <Step title="Documentation">
+    Provide comprehensive documentation for developers using your integration.
+  </Step>
+</Steps>
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="Developer Environment" icon="code" href="/developers/getting-started/environment">
+    Set up your development environment
+  </Card>
+  
+  <Card title="MUSD Integration" icon="dollar-sign" href="/musd/overview">
+    Integrate MUSD stablecoin
+  </Card>
+  
+  <Card title="Mezo Passport" icon="wallet" href="/developers/getting-started/mezo-passport">
+    Add wallet connection support
+  </Card>
+  
+  <Card title="Deploy Contracts" icon="rocket" href="/developers/developers/getting-started/dapp-requirements">
+    Requirements for Mezo Market
+  </Card>
+</CardGroup>
+
+<Note>
+Have questions about integrations? Join the [Mezo Discord](https://discord.com/invite/mezo) for support from the developer community.
+</Note>

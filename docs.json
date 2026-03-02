@@ -1,122 +1,152 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Mezo",
+  "theme": "aspen",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#FF004D",
+    "light": "#FF7399",
+    "dark": "#CC0040"
   },
-  "favicon": "/favicon.svg",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/mezo-org/documentation"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/mezo-org/documentation"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Users",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "introduction",
+              "getting-started/creating-an-account",
+              "getting-started/connect-wallet",
+              "getting-started/deposit-assets"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Introduction",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "introduction/why-bitcoin-needs-banking",
+              "introduction/self-service-banking"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "MUSD Stablecoin",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "musd/overview",
+              "musd/mint-musd",
+              "musd/fees",
+              "musd/architecture",
+              "musd/liquidation",
+              "musd/bridge"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "MEZO Token",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "mezo/overview",
+              "mezo/token-distribution",
+              "mezo/emissions",
+              "mezo/governance",
+              "mezo/bridge"
+            ]
+          },
+          {
+            "group": "Mezo Earn",
+            "pages": [
+              "earn/overview",
+              "earn/glossary",
+              "earn/vebtc-locking",
+              "earn/vemezo-locking",
+              "earn/voting",
+              "earn/liquidity-pools",
+              "earn/vaults"
+            ]
+          },
+          {
+            "group": "Mainnet",
+            "pages": [
+              "mainnet/bridges",
+              "mainnet/track-deposits"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "resources/faqs",
+              "resources/glossary",
+              "resources/audits",
+              "resources/contracts",
+              "resources/network-stats",
+              "resources/support"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Developers",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Get Started",
             "pages": [
-              "api-reference/introduction"
+              "developers/overview",
+              "developers/getting-started/environment",
+              "developers/getting-started/mezod",
+              "developers/getting-started/dapp-requirements",
+              "developers/getting-started/mezo-passport",
+              "developers/getting-started/integrations"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Mezo Nodes",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "developers/nodes/overview",
+              "developers/nodes/validator-kit",
+              "developers/nodes/validators"
+            ]
+          },
+          {
+            "group": "Architecture",
+            "pages": [
+              "developers/architecture/oracles",
+              "developers/architecture/read-oracle"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "developers/features/mezo-earn",
+              "developers/features/mezo-pools",
+              "developers/features/deploying-incentives"
+            ]
+          },
+          {
+            "group": "Bridge & MUSD",
+            "pages": [
+              "developers/bridge/mezo-bridge",
+              "developers/bridge/wormhole-musd",
+              "developers/musd/overview",
+              "developers/musd/redemptions"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "developers/reference/chains",
+              "developers/reference/subgraphs"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

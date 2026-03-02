@@ -1,0 +1,125 @@
+---
+title: MUSD Fees & Costs
+description: See all fee structures and costs involved in using MUSD on Mezo.
+---
+
+## Fee Summary
+
+The MUSD protocol has a transparent fee structure designed to maintain system stability while keeping borrowing costs competitive.
+
+| Fee | Amount | When Charged |
+| --- | --- | --- |
+| **Issuance fee** | 0.1% of borrowed MUSD | Opening or increasing a loan |
+| **Interest** | 1–5% APR (fixed at open) | Accrues on outstanding debt |
+| **Redemption fee** | 0.75% | Exchanging MUSD for BTC collateral (waived for borrowers) |
+| **Refinance fee** | 0.1% | Refinancing a loan to a new rate |
+| **Gas deposit** | 200 MUSD (flat) | Opening a loan (returned on close) |
+
+## Fee Distribution
+
+<Note>
+Fees are split between two destinations: **(1)** repaying the protocol bootstrap loan and **(2)** the MUSD Savings Vault. The initial split is 50/50 and is governable via the MUSD splitter. A minimum of 50% of fees must go toward loan repayment until the bootstrap loan is fully repaid. After repayment, all fees flow to the Savings Vault.
+</Note>
+
+![MUSD Economy](/images/musd/musd-economy.webp)
+
+## Interest Fees (1–5% APR)
+
+<Info>
+Interest on [MUSD](https://mezo.org/feature/musd) loans is **fixed for the life of the loan**. When credit is increased, the new credit will be added at the current interest rate.
+</Info>
+
+At launch, interest fees fund the MUSD treasury stability pool, which covers liquidations and bad debt.
+
+### How Interest Works
+
+- Interest is calculated using a **simple interest model** (not compounding)
+- Your rate is locked when you open your loan
+- If you add to your loan later, the new amount gets the current rate
+- You can refinance to a new rate for a 0.1% fee
+
+### Example
+
+If you borrow 10,000 MUSD at 3% APR:
+- After 1 year: 300 MUSD in interest
+- After 2 years: 600 MUSD in interest
+- Total to repay after 2 years: 10,600 MUSD
+
+## Redemption Fees (0.75%)
+
+This fee is paid when exchanging MUSD for the BTC collateral. When a user has an outstanding loan, the redemption fee is zero. Users who do not have an outstanding MUSD loan must pay the 0.75% redemption fee.
+
+At launch, redemption fees fund the MUSD treasury stability pool, which covers liquidations and bad debt.
+
+<Info>
+If you have an active MUSD loan, you can redeem MUSD for BTC **without paying the redemption fee**. This helps you arbitrage the peg if MUSD trades below $1.
+</Info>
+
+## Issuance Fee (0.1%)
+
+The issuance fee is paid when an MUSD loan is opened. The fee is 0.1% of borrowed MUSD and is paid in MUSD. A $10,000 MUSD loan would pay a $10 issuance fee in MUSD. If you increase your loan, you pay the issuance fee on the newly borrowed MUSD.
+
+### Example
+
+- Borrow 5,000 MUSD → Pay 5 MUSD issuance fee
+- Later, add 2,000 MUSD to your loan → Pay 2 MUSD issuance fee
+- Total issuance fees paid: 7 MUSD
+
+## Refinance Fee (0.1%)
+
+The refinance fee is incurred when a MUSD loan holder extends their line of credit or reduces the amount of collateral backing their loan. Refinancing fees are paid in MUSD.
+
+<Note>
+Refinancing allows you to update your loan's interest rate to the current global rate. This is useful if rates have dropped since you opened your loan, or if you want to extend your line of credit after BTC has appreciated.
+</Note>
+
+### When to Refinance
+
+- Global interest rates have decreased
+- You want to borrow more without adding collateral (if BTC has gone up)
+- You want to reduce collateral while maintaining the same debt
+
+## Gas Deposit (200 MUSD flat fee)
+
+A $200 deposit ensures that liquidations are viable. It is returned when the loan is closed. The gas deposit is minted as extra debt in the loan and held in escrow until the loan is closed. This debt counts towards calculating the collateralization ratio.
+
+<Info>
+The gas deposit is **fully refundable** when you close your loan. Think of it as a security deposit, not a fee.
+</Info>
+
+### Why the Gas Deposit Exists
+
+The gas deposit compensates liquidators for the gas costs of liquidating your position if it becomes undercollateralized. This ensures that liquidations remain economically viable even during periods of high gas prices, protecting the entire MUSD system.
+
+## Other Gas & Transaction Fees
+
+Users interacting with the MUSD system will have to pay transaction fees for each transaction broadcasted to Mezo Network. This includes actions such as:
+
+- Minting MUSD
+- Redeeming MUSD
+- Adding collateral
+- Repaying debt
+- Closing positions
+- Staking and claiming rewards
+
+These fees are paid in BTC on the Mezo network and vary based on network congestion.
+
+## Cost Comparison
+
+Compare MUSD's total cost of borrowing to other options:
+
+| Platform | Interest Rate | Additional Fees | Total First Year Cost (on 10k) |
+| --- | --- | --- | --- |
+| **MUSD** | 1-5% fixed | 0.1% issuance | ~$110 - $510 |
+| Traditional Banks | 7-20% variable | Various account fees | $700 - $2,000+ |
+| Other DeFi | 8-9% variable | Protocol fees | $800 - $900+ |
+
+## Risks to Know
+
+<Warning>
+Borrowing MUSD carries risk. Understanding these risks helps you protect your position.
+
+**Redemption risk** — To maintain the MUSD peg, the protocol can redeem MUSD against collateral, starting with the loans that have the **lowest collateral ratio**. If your loan is redeemed against, you lose exposure to BTC price upside and may face tax implications. To reduce this risk, keep your collateral ratio higher than other borrowers.
+
+**Liquidation risk** — If your loan's collateral ratio falls **below 110%**, your position can be liquidated. You lose your collateral and keep the borrowed MUSD. To reduce this risk, monitor your loan regularly and add collateral when needed. For full details, see [Liquidations & Redemptions](/musd/liquidation).
+</Warning>

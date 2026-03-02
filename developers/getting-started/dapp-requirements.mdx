@@ -1,0 +1,257 @@
+---
+title: dApp Requirements
+description: Requirements for dApps to be featured in the Mezo Market and receive promotional support.
+---
+
+Although the network is permissionless and anybody can deploy to Mezo Mainnet, dApps on Mezo must meet the following requirements to be featured in the Mezo Market and receive promotional support.
+
+## Requirements Overview
+
+<CardGroup cols={3}>
+  <Card title="MUSD Integration" icon="dollar-sign">
+    Integrate MUSD for payments, liquidity, or core functions
+  </Card>
+  
+  <Card title="Security Audit" icon="shield-check">
+    Complete third-party security audit report
+  </Card>
+  
+  <Card title="Mainnet Deployment" icon="rocket">
+    Fully functional on Mezo Mainnet
+  </Card>
+</CardGroup>
+
+## 1. MUSD Integration
+
+dApps must integrate [MUSD](https://mezo.org/feature/musd), the native collateralized stablecoin of the Mezo ecosystem.
+
+### Integration Options
+
+<AccordionGroup>
+  <Accordion title="Payment Support" icon="credit-card">
+    Support MUSD as a payment method for goods, services, or transactions within your dApp.
+    
+    ```solidity
+    // Example: Accept MUSD as payment
+    IERC20 musd = IERC20(MUSD_ADDRESS);
+    require(musd.transferFrom(msg.sender, address(this), amount), "Payment failed");
+    ```
+  </Accordion>
+
+  <Accordion title="Liquidity Asset" icon="water">
+    Use MUSD as a primary liquidity asset in trading pairs, liquidity pools, or lending markets.
+    
+    ```solidity
+    // Example: MUSD liquidity pool
+    IUniswapV2Pair pair = IUniswapV2Pair(factory.createPair(tokenA, MUSD_ADDRESS));
+    ```
+  </Accordion>
+
+  <Accordion title="Core Function Integration" icon="gears">
+    Integrate MUSD within other core functions such as collateral, yield generation, or reward distribution.
+    
+    ```solidity
+    // Example: MUSD as collateral
+    function depositCollateral(uint256 amount) external {
+        IERC20(MUSD_ADDRESS).transferFrom(msg.sender, address(this), amount);
+        collateral[msg.sender] += amount;
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### MUSD Resources
+
+<CardGroup cols={2}>
+  <Card title="MUSD Documentation" icon="book" href="/musd/overview">
+    Learn about MUSD architecture and integration
+  </Card>
+  
+  <Card title="MUSD Repository" icon="github" href="https://github.com/mezo-org/musd">
+    Smart contracts and implementation reference
+  </Card>
+</CardGroup>
+
+## 2. Security Audit
+
+The dApp must have completed a third-party security audit. The audit report must be submitted to the [Supernormal Foundation](https://www.supernormal.foundation/page).
+
+### Audit Requirements
+
+<Steps>
+  <Step title="Select an Auditor">
+    Choose a reputable third-party security auditing firm. Recommended auditors include:
+    - Trail of Bits
+    - OpenZeppelin
+    - Consensys Diligence
+    - Certik
+    - Quantstamp
+  </Step>
+
+  <Step title="Complete the Audit">
+    Work with the auditor to review your smart contracts and address any findings.
+    
+    <Note>
+    Ensure all critical and high-severity findings are resolved before submission.
+    </Note>
+  </Step>
+
+  <Step title="Submit Audit Report">
+    Submit your completed audit report to the [Supernormal Foundation](https://www.supernormal.foundation/page).
+    
+    The report should include:
+    - Auditor name and credentials
+    - Audit scope and methodology
+    - Findings and severity levels
+    - Remediation actions taken
+    - Final audit conclusion
+  </Step>
+</Steps>
+
+<Warning>
+Audit reports must be from recognized third-party security firms. Internal audits or self-assessments do not meet this requirement.
+</Warning>
+
+## 3. Mainnet Deployment
+
+The dApp must be fully deployed and functional on Mezo Mainnet.
+
+### Deployment Checklist
+
+<AccordionGroup>
+  <Accordion title="Smart Contracts" icon="file-contract">
+    - [ ] All smart contracts deployed to Mezo Mainnet
+    - [ ] Contract addresses verified on [Mezo Explorer](https://explorer.mezo.org/)
+    - [ ] Contract source code verified and published
+    - [ ] Contracts properly initialized and configured
+  </Accordion>
+
+  <Accordion title="Frontend Application" icon="desktop">
+    - [ ] Frontend application accessible via public URL
+    - [ ] Wallet connection working (MetaMask, Mezo Passport, etc.)
+    - [ ] All features functional on Mezo Mainnet
+    - [ ] Error handling and user feedback implemented
+  </Accordion>
+
+  <Accordion title="Network Configuration" icon="network-wired">
+    - [ ] Correct RPC endpoints configured
+    - [ ] Chain ID set to `31612` (Mezo Mainnet)
+    - [ ] Proper gas estimation and handling
+    - [ ] Transaction confirmation handling
+  </Accordion>
+
+  <Accordion title="Testing" icon="flask">
+    - [ ] End-to-end testing completed on Mainnet
+    - [ ] User flows tested and validated
+    - [ ] Edge cases and error scenarios tested
+    - [ ] Performance and load testing completed
+  </Accordion>
+</AccordionGroup>
+
+### Mainnet Configuration
+
+<CodeGroup>
+```javascript hardhat.config.js
+module.exports = {
+  networks: {
+    mezomainnet: {
+      url: "https://rpc-http.mezo.boar.network",
+      chainId: 31612,
+      accounts: [process.env.MAINNET_PRIVATE_KEY]
+    }
+  },
+  solidity: {
+    version: "0.8.28",
+    settings: {
+      evmVersion: "london",
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  },
+};
+```
+
+```toml foundry.toml
+[profile.mainnet]
+chain_id = 31612
+eth_rpc_url = "https://rpc-http.mezo.boar.network"
+evm_version = 'london'
+```
+</CodeGroup>
+
+## Submission Process
+
+<Steps>
+  <Step title="Complete All Requirements">
+    Ensure your dApp meets all three requirements:
+    - MUSD Integration
+    - Security Audit
+    - Mainnet Deployment
+  </Step>
+
+  <Step title="Prepare Documentation">
+    Gather the following documentation:
+    - dApp description and overview
+    - MUSD integration details
+    - Audit report
+    - Mainnet contract addresses
+    - Frontend URL
+    - Team information
+  </Step>
+
+  <Step title="Submit to Supernormal Foundation">
+    Submit your application and documentation to the [Supernormal Foundation](https://www.supernormal.foundation/page).
+  </Step>
+
+  <Step title="Review Process">
+    The Supernormal Foundation will review your submission and provide feedback or approval.
+  </Step>
+</Steps>
+
+## Benefits of Featuring
+
+Once approved, your dApp will receive:
+
+<CardGroup cols={2}>
+  <Card title="Mezo Market Listing" icon="store">
+    Featured placement in the official Mezo Market
+  </Card>
+  
+  <Card title="Promotional Support" icon="megaphone">
+    Marketing and promotional support from the Mezo ecosystem
+  </Card>
+  
+  <Card title="Community Exposure" icon="users">
+    Access to the Mezo community and user base
+  </Card>
+  
+  <Card title="Ecosystem Integration" icon="puzzle-piece">
+    Deeper integration with Mezo ecosystem partners
+  </Card>
+</CardGroup>
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="Developer Environment" icon="code" href="/developers/getting-started/environment">
+    Set up your development environment for Mezo
+  </Card>
+  
+  <Card title="MUSD Integration" icon="dollar-sign" href="/musd/overview">
+    Learn how to integrate MUSD into your dApp
+  </Card>
+  
+  <Card title="Mezo Passport" icon="wallet" href="/developers/getting-started/mezo-passport">
+    Add wallet connection support to your dApp
+  </Card>
+  
+  <Card title="Supernormal Foundation" icon="building" href="https://www.supernormal.foundation/page">
+    Submit your audit report and application
+  </Card>
+</CardGroup>
+
+<Note>
+Questions about the requirements or submission process? Join the [Mezo Discord](https://discord.com/invite/mezo) for support.
+</Note>

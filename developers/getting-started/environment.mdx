@@ -1,0 +1,241 @@
+---
+title: Set Up Developer Environment
+description: Configure your development environment to build and deploy on Mezo using Hardhat or Foundry.
+---
+
+Configure your Hardhat or Foundry development environment for Mezo to start building and deploying smart contracts.
+
+## Before You Begin
+
+Before you can deploy applications, you will need an Ethereum wallet with BTC to pay for gas fees.
+
+<Card title="Connect Your Wallet" icon="wallet" href="/getting-started/connect-wallet">
+  Learn how to connect your wallet to Mezo
+</Card>
+
+<Note>
+For advanced chain configuration and network parameters, see the [Chains Configuration Guide](/developers/reference/chains).
+</Note>
+
+## Testnet Configuration
+
+### Network Details
+
+| Parameter | Value |
+|-----------|-------|
+| Network Name | Mezo Testnet |
+| Chain ID | `31611` |
+| Currency | BTC (18 decimals) |
+| Block Explorer | [explorer.test.mezo.org](https://explorer.test.mezo.org/) |
+
+### RPC Endpoints
+
+| Protocol | URL |
+|----------|-----|
+| HTTPS | `https://rpc.test.mezo.org` |
+| WSS | `wss://rpc-ws.test.mezo.org` |
+
+### Get Testnet BTC
+
+To pay for gas fees on the Testnet, you will need Testnet BTC.
+
+<Steps>
+  <Step title="Visit the Mezo Faucet">
+    Obtain Testnet BTC from the official [Mezo Faucet](https://faucet.test.mezo.org/).
+    
+    <Note>The faucet is protected by a CAPTCHA to prevent abuse.</Note>
+  </Step>
+  
+  <Step title="Setup Your Wallet">
+    Ensure you have a browser wallet installed that supports Ethereum (EVM), such as MetaMask.
+  </Step>
+</Steps>
+
+### Hardhat Configuration
+
+<Steps>
+  <Step title="Install Hardhat">
+    If you are new to Hardhat, use the [Hardhat Quick Start](https://hardhat.org/hardhat-runner/docs/getting-started#quick-start) guide to learn how to install and initialize your project.
+  </Step>
+  
+  <Step title="Configure Network">
+    To configure Hardhat for Mezo Testnet, modify your `hardhat.config.js` (or `.ts`) file:
+
+    ```javascript hardhat.config.js
+    module.exports = {
+      defaultNetwork: "mezotestnet",
+      networks: {
+        mezotestnet: {
+          url: "https://rpc.test.mezo.org",
+          chainId: 31611,
+          accounts: ["YOUR_PRIVATE_WALLET_KEY"] // Use environment variables for security
+        }
+      },
+      solidity: {
+        version: "0.8.28",
+        settings: {
+          evmVersion: "london",
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
+      },
+    };
+    ```
+    
+    <Warning>
+    Always use environment variables to store private keys. Never commit private keys to version control.
+    </Warning>
+  </Step>
+</Steps>
+
+### Foundry Configuration
+
+<Steps>
+  <Step title="Install Foundry">
+    If you are new to Foundry, use the [Foundry Getting Started](https://book.getfoundry.sh/getting-started/installation) guide to learn how to install and initialize your project.
+  </Step>
+  
+  <Step title="Configure Network">
+    To configure a Foundry project for Mezo Testnet, set the following in your `foundry.toml`:
+
+    ```toml foundry.toml
+    [profile.default]
+    chain_id = 31611
+    eth_rpc_url = "https://rpc.test.mezo.org"
+    evm_version = 'london'
+    ```
+  </Step>
+</Steps>
+
+## Mainnet Configuration
+
+### Network Details
+
+| Parameter | Value |
+|-----------|-------|
+| Network Name | Mezo Mainnet |
+| Chain ID | `31612` |
+| Currency | BTC (18 decimals) |
+| Block Explorer | [explorer.mezo.org](https://explorer.mezo.org/) |
+
+### RPC Providers
+
+<Note>
+For production deployments, it is recommended to use a dedicated RPC provider for higher rate limits and stability.
+</Note>
+
+| Provider | HTTPS | WSS |
+|----------|-------|-----|
+| Boar | `https://rpc-http.mezo.boar.network` | `wss://rpc-ws.mezo.boar.network` |
+| Imperator | `https://rpc_evm-mezo.imperator.co` | `wss://ws_evm-mezo.imperator.co` |
+| Validation Cloud | `https://mainnet.mezo.public.validationcloud.io` | `wss://mainnet.mezo.public.validationcloud.io` |
+| dRPC NodeCloud | `https://mezo.drpc.org` | `wss://mezo.drpc.org` |
+
+### Hardhat Configuration
+
+To configure Hardhat for Mezo Mainnet, modify your `hardhat.config.js` (or `.ts`) file:
+
+```javascript hardhat.config.js
+module.exports = {
+  defaultNetwork: "mezomainnet",
+  networks: {
+    mezomainnet: {
+      url: "https://rpc-http.mezo.boar.network",
+      chainId: 31612,
+      accounts: ["YOUR_PRIVATE_WALLET_KEY"] // Use environment variables for security
+    }
+  },
+  solidity: {
+    version: "0.8.28",
+    settings: {
+      evmVersion: "london",
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  },
+};
+```
+
+<Warning>
+Always use environment variables to store private keys. Never commit private keys to version control.
+</Warning>
+
+### Foundry Configuration
+
+To configure a Foundry project for Mezo Mainnet, set the following in your `foundry.toml`:
+
+```toml foundry.toml
+[profile.default]
+chain_id = 31612
+eth_rpc_url = "https://rpc-http.mezo.boar.network"
+evm_version = 'london'
+```
+
+## Multi-Network Configuration
+
+For projects that need to support both Testnet and Mainnet, you can configure multiple networks:
+
+<CodeGroup>
+```javascript hardhat.config.js
+module.exports = {
+  networks: {
+    mezotestnet: {
+      url: "https://rpc.test.mezo.org",
+      chainId: 31611,
+      accounts: [process.env.TESTNET_PRIVATE_KEY]
+    },
+    mezomainnet: {
+      url: "https://rpc-http.mezo.boar.network",
+      chainId: 31612,
+      accounts: [process.env.MAINNET_PRIVATE_KEY]
+    }
+  },
+  solidity: {
+    version: "0.8.28",
+    settings: {
+      evmVersion: "london",
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  },
+};
+```
+
+```toml foundry.toml
+[profile.testnet]
+chain_id = 31611
+eth_rpc_url = "https://rpc.test.mezo.org"
+evm_version = 'london'
+
+[profile.mainnet]
+chain_id = 31612
+eth_rpc_url = "https://rpc-http.mezo.boar.network"
+evm_version = 'london'
+```
+</CodeGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Deploy Contracts" icon="rocket">
+    Start deploying your smart contracts to Mezo using your configured environment
+  </Card>
+  
+  <Card title="Mezo Passport" icon="wallet" href="/developers/getting-started/mezo-passport">
+    Integrate wallet support for both Bitcoin and EVM wallets
+  </Card>
+  
+  <Card title="MUSD Integration" icon="dollar-sign" href="/musd/overview">
+    Integrate MUSD stablecoin into your dApp
+  </Card>
+  
+  <Card title="dApp Requirements" icon="list-check" href="/developers/developers/getting-started/dapp-requirements">
+    Review requirements for featuring in Mezo Market
+  </Card>
+</CardGroup>

@@ -1,0 +1,167 @@
+---
+title: Mezo Earn Overview
+description: Overview of Mezo Earn, yield sources, and key concepts for earning with BTC and MEZO
+---
+
+Mezo Earn is the economic engine powering the Mezo network. It enables bitcoin holders to earn yield on their BTC while participating in governance decisions that shape how the network allocates resources and rewards.
+
+By locking BTC into the system, users gain voting power, earn passive income from network activity, and help direct liquidity across the Mezo ecosystem.
+
+<Note>
+  [Download the Mezo Earn Whitepaper (PDF)](/Mezo_Earn_Whitepaper.pdf)
+</Note>
+
+## Where Does Yield Come From?
+
+Mezo Earn generates yield from real economic activity on the network. There are three primary sources:
+
+<CardGroup cols={3}>
+  <Card title="Swap Fees" icon="arrow-right-arrow-left">
+    When users trade assets on Mezo's DEX, each swap incurs a fee. These fees accumulate in liquidity pools and are distributed to participants who vote for those pools.
+  </Card>
+  
+  <Card title="MUSD Lending Revenue" icon="dollar-sign">
+    Mezo allows users to borrow MUSD (a bitcoin-backed stablecoin) against their BTC collateral. The interest, origination fees, and refinancing fees generated from these loans flow back into the system.
+  </Card>
+  
+  <Card title="Bridging & Transaction Fees" icon="link">
+    Moving assets onto Mezo, executing transactions, and other on-chain activity all generate fees. These fees are distributed directly to veBTC holders as passive yield—no voting required.
+  </Card>
+</CardGroup>
+
+## The Dual-Token Model
+
+Mezo Earn operates on a dual-token system that keeps Bitcoin at the center of governance while using MEZO to amplify and direct influence.
+
+### veBTC: The Anchor
+
+veBTC (vote-escrowed BTC) provides the foundation of voting power. When you lock BTC, you receive a veBTC NFT that grants:
+
+- Base voting weight (1x multiplier)
+- Passive yield from bridging and chain fees
+- The right to vote on gauges and direct emissions
+
+**Parameters:**
+- Max lock: 28 days
+- Min lock: 1 day
+- Decay: Linear (voting weight decreases as lock approaches expiration)
+
+### veMEZO: The Boost
+
+veMEZO (vote-escrowed MEZO) amplifies veBTC voting power but carries no independent governance weight. Locking MEZO into veMEZO allows you to:
+
+- Boost veBTC positions up to 5x their base weight
+- Earn incentives by directing votes to veBTC gauges
+- Receive rebase distributions that protect against dilution
+
+**Parameters:**
+- Max lock: 4 years
+- Min lock: 1 week
+- Decay: Linear
+
+<Note>
+  **Key principle:** MEZO cannot form independent governance power. It only amplifies the weight of locked Bitcoin.
+</Note>
+
+## Key Concepts
+
+<Accordion title="Boosted Weight">
+  When veBTC and veMEZO are paired, they create a combined "boosted weight" that determines your share of fees and your influence over emissions. The boost depends on your relative share of total veBTC and veMEZO in the system.
+
+  - A veBTC position with no veMEZO operates at 1x (base weight)
+  - Adding veMEZO can increase this up to a maximum of 5x
+  - Larger BTC positions require proportionally more MEZO to reach max boost
+</Accordion>
+
+<Accordion title="Epochs">
+  Mezo Earn operates on a 7-day cycle called an **epoch**. Each epoch begins on Thursday at 00:00 UTC.
+
+  **What happens each epoch:**
+
+  - Votes cast in epoch N determine emission allocation for epoch N+1
+  - Fees generated in epoch N are distributed based on votes cast in epoch N
+  - Lock durations align to epoch boundaries (always rounded down to full weeks)
+
+  This structure lets voters observe fee generation before deciding where to allocate their votes for the following period.
+</Accordion>
+
+<Accordion title="Gauges">
+  Gauges are smart contracts that receive and distribute economic value based on votes. Think of them as destinations for your voting power—the more votes a gauge receives, the larger its share of rewards.
+
+  **Types of gauges:**
+
+  | Gauge Type | What It Does |
+  | --- | --- |
+  | **Staking Gauges** | Associated with DEX liquidity pools or the MUSD savings vault. Stakers earn MEZO emissions; voters earn fees. |
+  | **Validator Gauges** | Direct rewards to network validators who secure the chain. |
+  | **Ecosystem Gauges** | Support partner protocols and ecosystem development. |
+  | **veBTC Boost Gauges** | Every veBTC NFT has its own gauge where veMEZO holders can vote to provide boost. |
+</Accordion>
+
+## The Matching Market
+
+Mezo Earn creates an explicit market between BTC and MEZO holders through the boost mechanism.
+
+<Steps>
+  <Step title="Lock BTC">
+    When you lock BTC, the system creates a dedicated boost gauge for your veBTC position
+  </Step>
+  
+  <Step title="veMEZO Holders Vote">
+    veMEZO holders can vote on your gauge to provide boost
+  </Step>
+  
+  <Step title="Post Incentives">
+    You can post incentives on your gauge to attract veMEZO votes
+  </Step>
+  
+  <Step title="Activate Boost">
+    The boost takes effect after a "poke" transaction refreshes your position
+  </Step>
+</Steps>
+
+This turns boost into a tradable service. BTC holders who want higher multipliers can either acquire MEZO themselves or pay incentives to attract veMEZO votes. MEZO holders can earn yield by directing their votes to gauges with attractive incentives.
+
+## How Rewards Flow
+
+**Passive yield:** All veBTC holders receive a share of bridging and chain fees proportional to their boosted voting weight—no action required beyond locking.
+
+**Active yield:** By voting for specific gauges, you can earn additional fees and incentives from the pools and protocols you support.
+
+**veMEZO yield:** veMEZO holders earn incentives posted on veBTC gauges they vote for, plus rebase distributions that protect against dilution.
+
+## Getting Started
+
+<Steps>
+  <Step title="Lock BTC">
+    Receive a veBTC NFT with base voting power
+  </Step>
+  
+  <Step title="Vote for Gauges">
+    Direct where emissions flow and earn fees
+  </Step>
+  
+  <Step title="Claim Rewards">
+    Collect fees and incentives each epoch
+  </Step>
+  
+  <Step title="Lock MEZO (Optional)">
+    Create veMEZO to boost your veBTC or earn by voting on others' boost gauges
+  </Step>
+  
+  <Step title="Manage Locks">
+    Maintain your voting power over time
+  </Step>
+</Steps>
+
+## Quick Reference
+
+| Parameter | Value |
+| --- | --- |
+| Epoch duration | 7 days |
+| Epoch start | Thursday 00:00 UTC |
+| Max BTC lock | 28 days |
+| Min BTC lock | 1 day |
+| Max MEZO lock | 4 years |
+| Min MEZO lock | 1 week |
+| Max boost multiplier | 5x |

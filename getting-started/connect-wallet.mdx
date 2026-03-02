@@ -1,0 +1,162 @@
+---
+title: Connect Your Wallet to Mezo
+description: Connect your existing wallet to the Mezo network using Chainlist or manual configuration.
+---
+
+To use Mezo, you need to add the Mezo network to your browser wallet. You can connect using Chainlist for automatic setup or add the network manually.
+
+## Quick Connect with Chainlist
+
+The easiest way to add Mezo to your wallet is using the **Connect Wallet** button at Chainlist:
+
+- **Mainnet**: [https://chainlist.org/chain/31612](https://chainlist.org/chain/31612)
+- **Testnet**: [https://chainlist.org/chain/31611](https://chainlist.org/chain/31611)
+
+<Info>
+If Chainlist does not work, you can add the network manually using the network details below.
+</Info>
+
+## Mezo Mainnet Configuration
+
+### Public RPC Endpoints
+
+| Provider | HTTPS | WSS |
+|----------|-------|-----|
+| Boar | `https://rpc-http.mezo.boar.network` | `wss://rpc-ws.mezo.boar.network` |
+| Imperator | `https://rpc_evm-mezo.imperator.co` | `wss://ws_evm-mezo.imperator.co` |
+| Validation Cloud | `https://mainnet.mezo.public.validationcloud.io` | `wss://mainnet.mezo.public.validationcloud.io` |
+
+<Note>
+For higher rate limits and low-latency Mezo RPC, get your free Validation Cloud API key at [validationcloud.io/mezo](https://www.validationcloud.io/mezo) or contact them at [validationcloud.io/contact](https://validationcloud.io/contact) for Enterprise plans.
+</Note>
+
+### Network Details
+
+| Parameter | Value |
+|-----------|-------|
+| Chain ID | `31612` |
+| Currency | BTC (18 decimals) |
+| Block Explorer | [explorer.mezo.org](https://explorer.mezo.org/) |
+
+## Mezo Testnet Configuration
+
+### Public RPC Endpoints
+
+| Protocol | URL |
+|----------|-----|
+| HTTPS | `https://rpc.test.mezo.org` |
+| WSS | `wss://rpc-ws.test.mezo.org` |
+
+### Network Details
+
+| Parameter | Value |
+|-----------|-------|
+| Chain ID | `31611` |
+| Currency | BTC (18 decimals) |
+| Block Explorer | [explorer.test.mezo.org](https://explorer.test.mezo.org/) |
+
+<Info>
+**Building on Mezo?** See the [Set Up Developer Environment](/developers/getting-started/environment) guide for Hardhat and Foundry configuration.
+</Info>
+
+## Manual Network Setup
+
+If you need to add the network to your wallet manually, follow the instructions for your specific wallet:
+
+<Steps>
+  <Step title="Open Wallet Settings">
+    Access your wallet's network settings menu
+  </Step>
+  
+  <Step title="Add Custom Network">
+    Select the option to add a custom network or RPC
+  </Step>
+  
+  <Step title="Enter Network Details">
+    Input the Mezo network details from the tables above:
+    - Network Name: Mezo Mainnet (or Testnet)
+    - RPC URL: Choose from the available endpoints
+    - Chain ID: `31612` for Mainnet or `31611` for Testnet
+    - Currency Symbol: BTC
+    - Block Explorer: `https://explorer.mezo.org/` (or test explorer)
+  </Step>
+  
+  <Step title="Save and Switch">
+    Save the network configuration and switch to the Mezo network
+  </Step>
+</Steps>
+
+### Wallet-Specific Guides
+
+- **MetaMask**: [How to add a custom network RPC](https://support.metamask.io/networks-and-sidechains/managing-networks/how-to-add-a-custom-network-rpc/)
+- **Brave Wallet**: [Adding a Custom Network](https://support.brave.com/hc/en-us/articles/15614704959757-Adding-a-New-Chain)
+- **TrustWallet**: [Add a Custom Network (Mobile)](https://trustwallet.com/blog/guides/how-to-add-a-custom-network-on-the-trust-wallet-app)
+
+## BTC Wallet Support
+
+BTC wallets are fully supported in the Mezo App and can receive a Mezo network address associated with your BTC wallet.
+
+**BTC wallets can currently:**
+- Bridge BTC assets
+- Bridge EVM assets
+- Borrow, repay, or manage collateral for a loan
+- Purchase items on the MUSD Market
+- Receive assets on the Mezo Network
+
+<Warning>
+BTC wallets cannot currently send assets on the Mezo Network. As the network evolves, more features and capabilities will be made available to BTC wallets.
+</Warning>
+
+## OKX Wallet
+
+### Asset Display Limitation
+
+While you can successfully add the Mezo network to OKX Wallet, there is currently a limitation where Mezo assets may not display directly in the wallet interface.
+
+**What to check:**
+- Verify the Mezo network is added with the correct RPC URL and Chain ID (31612)
+- Check your network selection - ensure Mezo is selected in the top right corner
+- Custom asset limitation - it may not appear in the networks dropdown when adding custom assets
+
+### Need Help with OKX?
+
+If you're experiencing issues with displaying Mezo assets or adding custom tokens on OKX Wallet, reach out to OKX Wallet Support on their Discord server for additional guidance and troubleshooting.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Network not appearing after adding">
+    - Clear your wallet cache and restart your browser
+    - Double-check that all network details are entered correctly
+    - Try using a different RPC endpoint from the list above
+  </Accordion>
+  
+  <Accordion title="Transactions failing">
+    - Ensure you have BTC or tBTC for gas fees
+    - Verify you're connected to the correct network (Mainnet vs Testnet)
+    - Check that your wallet is unlocked and connected to the Mezo App
+  </Accordion>
+  
+  <Accordion title="Assets not showing in wallet">
+    - Some wallets require manually adding token contracts
+    - Check the [Contracts Reference](/resources/contracts#mainnet-asset-token-contracts) for token addresses
+    - For OKX Wallet specifically, see the [OKX Wallet section](#okx-wallet) above
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Once your wallet is connected:
+
+<CardGroup cols={2}>
+  <Card title="Deposit Assets" icon="arrow-down-to-line" href="/getting-started/deposit-assets">
+    Bridge Bitcoin to start using Mezo's features
+  </Card>
+  <Card title="Borrow MUSD" icon="coins" href="/musd/mint-musd">
+    Access fixed-rate loans against your Bitcoin
+  </Card>
+</CardGroup>
+
+## Developer Resources
+
+To learn how to develop and deploy dApps on Mezo, see the [Developer Getting Started](/getting-started/) documentation.

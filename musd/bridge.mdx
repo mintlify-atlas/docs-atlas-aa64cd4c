@@ -1,0 +1,119 @@
+---
+title: MUSD Bridge
+description: Learn how to bridge MUSD tokens between Ethereum and Mezo using Wormhole's Native Token Transfer protocol.
+---
+
+The [MUSD](https://mezo.org/feature/musd) bridge enables transfers between Mezo and Ethereum networks using Wormhole's Native Token Transfer (NTT) protocol. This bridge maintains token fungibility while providing secure cross-chain functionality.
+
+## How It Works
+
+The MUSD bridge uses Wormhole's Native Token Transfer protocol to facilitate cross-chain transfers:
+
+<Info>
+- **From Mezo to Ethereum**: MUSD tokens are locked on Mezo and the equivalent tokens are minted on Ethereum
+- **From Ethereum to Mezo**: MUSD tokens are burned on Ethereum and equivalent tokens are unlocked on Mezo
+</Info>
+
+This mechanism ensures that the total supply across both chains remains constant while allowing users to move their tokens freely between networks.
+
+## Using the Portal UI
+
+The easiest way to bridge MUSD tokens is through the [Portal UI](https://portalbridge.com/):
+
+<Steps>
+  <Step title="Connect Your Wallet">
+    Connect your wallet to the Portal interface. Make sure you have the network you're bridging from set as your active network.
+  </Step>
+
+  <Step title="Select Source and Destination Chains">
+    Choose either Mezo → Ethereum or Ethereum → Mezo depending on which direction you want to bridge.
+  </Step>
+
+  <Step title="Choose MUSD Token">
+    Select MUSD as the token to bridge. The Portal will automatically detect your MUSD balance.
+  </Step>
+
+  <Step title="Enter Amount">
+    Enter the amount of MUSD you want to bridge. Make sure to leave enough for gas fees on the source chain.
+  </Step>
+
+  <Step title="Review Transaction Details">
+    Review the transaction details including:
+    - Bridge fees
+    - Estimated transfer time
+    - Destination address
+    - Total amount to receive
+  </Step>
+
+  <Step title="Confirm Transaction">
+    Confirm the transaction in your wallet. You'll need to approve the MUSD spend first, then confirm the bridge transaction.
+  </Step>
+
+  <Step title="Wait for Confirmation">
+    Wait for confirmation on both chains. The Portal UI will show you the progress of your transfer. This typically takes a few minutes.
+  </Step>
+</Steps>
+
+<Note>
+The Portal UI provides a user-friendly interface that handles all the complex interactions with the underlying NTT contracts.
+</Note>
+
+## Smart Contracts
+
+The MUSD bridge is powered by the following smart contracts:
+
+### Mezo Network
+
+- **NTT Manager**: [0x7efb386675d75280D39Aae42964A6776DE0ee0bD](https://explorer.mezo.org/address/0x7efb386675d75280D39Aae42964A6776DE0ee0bD)
+- **Wormhole Transceiver**: [0x56E27f1A8425515FFD4BD76A254Ac1a5c0B66D71](https://explorer.mezo.org/address/0x56E27f1A8425515FFD4BD76A254Ac1a5c0B66D71)
+- **MUSD Token**: [0xdD468A1DDc392dcdbEf6db6e34E89AA338F9F186](https://explorer.mezo.org/token/0xdD468A1DDc392dcdbEf6db6e34E89AA338F9F186)
+
+### Ethereum Network
+
+- **NTT Manager**: [0x5293158bf7a81ED05418DA497a80F7e6Dbf4477E](https://etherscan.io/address/0x5293158bf7a81ED05418DA497a80F7e6Dbf4477E)
+- **Wormhole Transceiver**: [0x76ddB3f1dDe02391Ef0A28664499B74C29d18d3E](https://etherscan.io/address/0x76ddB3f1dDe02391Ef0A28664499B74C29d18d3E)
+- **MUSD Token**: [0xdD468A1DDc392dcdbEf6db6e34E89AA338F9F186](https://etherscan.io/address/0xdD468A1DDc392dcdbEf6db6e34E89AA338F9F186)
+
+<Warning>
+Always verify you're interacting with the correct contract addresses. The addresses above are the official MUSD bridge contracts.
+</Warning>
+
+## Bridge Security
+
+The MUSD bridge leverages Wormhole's proven security model:
+
+- **Decentralized Guardian Network**: 19 guardians validate cross-chain messages
+- **Lock and Mint Mechanism**: Ensures total supply remains constant
+- **Audited Smart Contracts**: All contracts have been audited by leading security firms
+- **Real-time Monitoring**: Bridge activity is monitored 24/7
+
+## Troubleshooting
+
+<Accordion title="My tokens haven't arrived yet">
+Bridge transfers typically take 2-5 minutes. If your tokens haven't arrived after 10 minutes:
+1. Check the transaction status on the Portal UI
+2. Verify the transaction was confirmed on the source chain
+3. Check if you need to manually claim on the destination chain (rare)
+</Accordion>
+
+<Accordion title="Transaction failed">
+If your bridge transaction failed:
+1. Ensure you have enough gas on the source chain
+2. Check that you approved the MUSD spend
+3. Verify you're connected to the correct network
+4. Try again with a higher gas price if network is congested
+</Accordion>
+
+<Accordion title="Wrong network in wallet">
+Make sure your wallet is set to:
+- **Mezo Mainnet** when bridging from Mezo
+- **Ethereum Mainnet** when bridging from Ethereum
+
+The Portal may prompt you to switch networks automatically.
+</Accordion>
+
+## Additional Resources
+
+- [Wormhole NTT Documentation](https://wormhole.com/docs/products/native-token-transfers/overview/) - Learn more about the Native Token Transfer protocol
+- [Portal Bridge](https://portalbridge.com/) - The official UI for bridging tokens
+- [Contracts Reference](../../resources/contracts.md) - Complete list of all protocol contracts

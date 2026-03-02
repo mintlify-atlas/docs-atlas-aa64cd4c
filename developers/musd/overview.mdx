@@ -1,0 +1,374 @@
+---
+title: MUSD Development Guide
+description: Complete guide for developing with MUSD, the Bitcoin-backed stablecoin on Mezo, covering architecture, core concepts, and contract integration
+---
+
+MUSD is a Bitcoin-backed stablecoin that provides a stable value store while maintaining Bitcoin's security and decentralization. This guide covers the core architecture of MUSD and how to integrate with its smart contracts.
+
+<Note>
+MUSD is a collateralized debt position (CDP) based on [Threshold USD](https://github.com/Threshold-USD/dev), which is a fork of [Liquity](https://github.com/liquity/dev).
+</Note>
+
+## Architectural Overview
+
+The protocol allows Bitcoin holders to mint MUSD by using their BTC as collateral. This means users can access USD-denominated liquidity while keeping their Bitcoin investment intact. The primary components are how the system handles **custody**, maintains the **price peg**, and earns **fees**.
+
+### Custody
+
+A user opens up a position by calling `BorrowerOperations.openTrove`, providing BTC, and requesting MUSD. The BTC is routed to the `ActivePool`, where it stays until a user either:
+
+- Withdraws (via `BorrowerOperations.withdrawColl`)
+- Pays off their debt (via `BorrowerOperations.closeTrove`)
+- Is redeemed against (via `TroveManager.redeemCollateral`)
+- Gets liquidated (via `TroveManager.liquidate`)
+
+Liquidated positions are either paid for by the `StabilityPool`, in which case the BTC is transferred there, or the debt and collateral are absorbed and redistributed to other users, in which case the BTC is transferred to the `DefaultPool`.
+
+### Maintaining the Peg
+
+#### Price Floor ($1)
+
+We maintain the **price floor of $1** through arbitrage, an external USD ↔ BTC price oracle, and the ability to redeem MUSD for BTC at a 1:1 rate (via `TroveManager.redeemCollateral`).
+
+**Example arbitrage scenario:**
+
+Imagine that MUSD was trading for $0.80 on an exchange and that bitcoin is selling for 1 BTC = $100k. An arbitrageur with $800 could:
+
+<Steps>
+  <Step title="Buy MUSD">
+    Trade $800 for 1000 MUSD.
+  </Step>
+  
+  <Step title="Redeem for BTC">
+    Redeem 1000 MUSD for 0.01 BTC ($1000 worth of BTC).
+  </Step>
+  
+  <Step title="Sell BTC">
+    Sell 0.01 BTC for $1000.
+  </Step>
+</Steps>
+
+The arbitrageur profits $200 (ignoring fees). This trade **buys** MUSD and **burns** it, causing upward price pressure until the price resets to $1.
+
+#### Price Ceiling ($1.10)
+
+We maintain a **price ceiling of $1.10** via the minimum 110% collateralization ratio.
+
+**Example arbitrage scenario:**
+
+Imagine that MUSD is trading for $1.20 on an exchange, and that bitcoin is selling for 1 BTC = $100k. An arbitrageur with $100k could:
+
+<Steps>
+  <Step title="Buy BTC">
+    Buy 1 BTC (worth $100k).
+  </Step>
+  
+  <Step title="Open Trove">
+    Open a trove with 1 BTC as collateral and borrow the maximum 90,909 MUSD.
+  </Step>
+  
+  <Step title="Sell MUSD">
+    Sell 90,909 MUSD for $109,091.
+  </Step>
+</Steps>
+
+The arbitrageur profits $9,091 (ignoring fees). This trade **sells** and **mints** MUSD, causing downward price pressure until the price reaches $1.10.
+
+### Fees
+
+The protocol collects fees in four places:
+
+<ParamField path="Borrowing Rate" type="percentage" default="0.1%">
+  Governable fee added as debt to a trove but minted to governance.
+</ParamField>
+
+<ParamField path="Redemption Rate" type="percentage" default="0.75%">
+  Governable fee taken whenever a user redeems MUSD for BTC.
+</ParamField>
+
+<ParamField path="Refinancing Rate" type="percentage">
+  Operates like the borrowing rate when refinancing a trove.
+</ParamField>
+
+<ParamField path="Interest Rate" type="percentage">
+  Simple, fixed interest on the principal of the loan.
+</ParamField>
+
+## Core Ideas
+
+### Protocol Bootstrap Loan & Stability Pool
+
+<Note>
+Unlike protocols that incentivize stability pool deposits with token rewards, MUSD's Stability Pool is initially populated with a bootstrapping loan. This MUSD can only be used for liquidations.
+</Note>
+
+When the protocol's MUSD is used in a liquidation, it is first used to repay any outstanding protocol loan balance, ensuring the bootstrap loan cannot be withdrawn. Repayments on this loan are anticipated to be made weekly.
+
+### Protocol Controlled Value (PCV)
+
+Over time, as the protocol accrues interest and fees, the bootstrap loan gets repaid, and the portion of the MUSD in the Stability Pool that is Protocol Controlled Value increases. The PCV contract manages the distribution of accrued MUSD from interest and fees, with the split between loan repayment and a fee recipient being governable.
+
+### Immutability and Upgradability
+
+<Warning>
+MUSD smart contracts are upgradable to allow for fixes. Substantial changes would require deploying a new set of contracts and having users opt-in to migrate, ensuring user control. Once battle-tested, the contracts will be made immutable.
+</Warning>
+
+## Repository Structure
+
+The [MUSD repository](https://github.com/mezo-org/musd.git) contains:
+
+- **[Smart Contracts](https://github.com/mezo-org/musd/tree/main/contracts)**: Core MUSD protocol contracts
+- **[Integration Examples](https://github.com/mezo-org/musd/tree/main/examples)**: Sample implementations
+- **[Testing Suite](https://github.com/mezo-org/musd/tree/main/test)**: Comprehensive test coverage
+- **[Documentation](https://github.com/mezo-org/musd/tree/main/docs)**: Technical specifications
+
+## Development Setup
+
+### Prerequisites
+
+- Node.js 18+ (check [`.nvmrc`](https://github.com/mezo-org/musd/blob/main/.nvmrc) for exact version)
+- pnpm package manager
+- Foundry for smart contract development
+- Git
+
+### Installation
+
+<Steps>
+  <Step title="Clone Repository">
+    ```bash
+    git clone https://github.com/mezo-org/musd.git
+    cd musd
+    ```
+  </Step>
+  
+  <Step title="Install Dependencies">
+    ```bash
+    pnpm install
+    ```
+  </Step>
+  
+  <Step title="Configure Environment">
+    ```bash
+    cp .env.example .env
+    # Edit .env with your configuration
+    ```
+  </Step>
+</Steps>
+
+## System Overview
+
+The MUSD system consists of four main contract groups:
+
+```mermaid
+graph TD
+    subgraph TokenSystem["Token"]
+        MUSD
+    end
+    subgraph Core["Core Protocol"]
+        BorrowerOperations
+        TroveManager
+        StabilityPool
+    end
+    subgraph Pools["Asset Pools"]
+        ActivePool
+        DefaultPool
+        CollSurplusPool
+        GasPool
+    end
+    subgraph Support["Supporting Contracts"]
+        BorrowerOperationsSignatures
+        PriceFeed
+        SortedTroves
+        HintHelpers
+        InterestRateManager
+        PCV
+    end
+    TokenSystem-->Core
+    Core-->Pools
+    Pools-->Support
+```
+
+- **Core Protocol**: Handles main operations like opening/closing positions and managing collateral
+- **Asset Pools**: Manages the system's various collateral and liquidity pools
+- **Supporting Contracts**: Provides services like price feeds, remote trove management, and PCV
+
+## Integration Guide
+
+### Opening a Trove
+
+For optimal gas efficiency, provide hints for the trove's insertion position in the sorted list.
+
+<CodeGroup>
+
+```typescript TypeScript
+async function openTroveWithHints(
+  contracts: {
+    borrowerOperations: Contract,
+    troveManager: Contract,
+    sortedTroves: Contract,
+    hintHelpers: Contract
+  },
+  wallet: Wallet,
+  debtAmount: bigint,
+  assetAmount: bigint
+) {
+  // Compute expected total debt by adding gas compensation and fee
+  const gasCompensation = await contracts.troveManager.MUSD_GAS_COMPENSATION();
+  const expectedFee = 
+    await contracts.borrowerOperations.getBorrowingFee(debtAmount);
+  const expectedTotalDebt = debtAmount + expectedFee + gasCompensation;
+
+  const nicr = (assetAmount * BigInt(1e20)) / expectedTotalDebt;
+
+  const { '0': approxHint } = await contracts.hintHelpers.getApproxHint(nicr, 15, 42);
+
+  const { '0': upperHint, '1': lowerHint } =
+    await contracts.sortedTroves.findInsertPosition(nicr, approxHint, approxHint);
+
+  await contracts.borrowerOperations
+    .connect(wallet)
+    .openTrove(debtAmount, upperHint, lowerHint, { value: assetAmount });
+}
+```
+
+```solidity Solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface IBorrowerOperations {
+    function openTrove(
+        uint256 _maxFeePercentage,
+        uint256 _MUSDAmount,
+        address _upperHint,
+        address _lowerHint
+    ) external payable;
+}
+
+contract TroveOpener {
+    IBorrowerOperations public borrowerOperations;
+    
+    function openTrove(
+        uint256 debtAmount,
+        address upperHint,
+        address lowerHint
+    ) external payable {
+        borrowerOperations.openTrove{
+            value: msg.value
+        }(
+            type(uint256).max, // max fee
+            debtAmount,
+            upperHint,
+            lowerHint
+        );
+    }
+}
+```
+
+</CodeGroup>
+
+### Adjusting and Closing Troves
+
+You can similarly adjust (`adjustTrove`) or close (`closeTrove`) troves. Convenience functions are also available for withdrawing/repaying MUSD and adding/withdrawing collateral.
+
+<Note>
+For complete examples, see the [demo test file](https://github.com/mezo-org/musd/blob/main/test/integration/Demo.test.ts).
+</Note>
+
+## Liquidations
+
+When a trove's collateralization ratio falls below 110%, it can be liquidated by anyone. The liquidator is rewarded with a gas compensation and a percentage of the trove's collateral.
+
+### Liquidation Flows
+
+1. **With Stability Pool**: The Stability Pool's MUSD is burned to cover the debt, and it seizes the collateral.
+2. **Partial Stability Pool**: If the pool is insufficient, it covers what it can, and the remaining debt/collateral is redistributed to other active troves.
+3. **Empty Stability Pool**: All debt and collateral are redistributed to other active troves.
+
+### Executing a Liquidation
+
+<CodeGroup>
+
+```typescript Single Liquidation
+async function liquidateTrove(
+  troveManager: Contract,
+  wallet: Wallet,
+  borrowerAddress: string
+) {
+  await troveManager.connect(wallet).liquidate(borrowerAddress);
+}
+```
+
+```typescript Batch Liquidation
+async function batchLiquidate(
+  troveManager: Contract,
+  wallet: Wallet,
+  troveAddresses: string[]
+) {
+  await troveManager.connect(wallet).batchLiquidateTroves(troveAddresses);
+}
+```
+
+</CodeGroup>
+
+## Redemptions
+
+Any MUSD holder can redeem their tokens for an equivalent value of BTC, which helps maintain the $1 peg. The system redeems against the trove with the lowest collateral ratio.
+
+For step-by-step instructions and code, see the dedicated guide:
+
+- [MUSD Redemptions](/musd/redemptions)
+
+## Borrower Risks
+
+<Warning>
+Be aware of these risks when using MUSD:
+
+- **Liquidation Risk**: Your collateral can be liquidated if its value falls below 110% of your debt.
+- **Redemption Risk**: Your collateral can be redeemed to maintain the peg, causing a taxable event and loss of upside exposure.
+- **Bad Debt**: In extreme cases, bad debt could be socialized across other borrowers.
+</Warning>
+
+## Testing
+
+```bash
+# Run all tests
+pnpm test
+
+# Run with gas reporting
+pnpm test:gas
+
+# Run with coverage
+pnpm coverage
+```
+
+## Key Changes from THUSD
+
+- **Fixed-Interest Borrowing**: Interest rates are fixed when a trove is opened and can be refinanced.
+- **Protocol Controlled Value (PCV)**: Manages fees for loan repayment and other system needs.
+- **EIP-712 Signature Verification**: Allows for gasless transaction authorizations.
+- **No Special Recovery Mode Liquidations**: Liquidations follow a single process.
+
+## Definitions
+
+<ParamField path="Trove" type="concept">
+  A collateralized debt position (CDP).
+</ParamField>
+
+<ParamField path="ICR" type="metric">
+  Individual Collateralization Ratio of a single trove.
+</ParamField>
+
+<ParamField path="TCR" type="metric">
+  Total Collateralization Ratio of the entire system.
+</ParamField>
+
+<ParamField path="Recovery Mode" type="state">
+  Activated if TCR falls below 150%, enforcing stricter borrowing rules.
+</ParamField>
+
+## Additional Resources
+
+- **[MUSD Main README](https://github.com/mezo-org/musd/blob/main/README.md)** - Comprehensive architectural overview
+- **[Demo Test Suite](https://github.com/mezo-org/musd/blob/main/test/integration/Demo.test.ts)** - Working code examples
+- **[MUSD User Guide](/musd/)** - End-user documentation

@@ -1,0 +1,478 @@
+---
+title: Subgraph Endpoints
+description: GraphQL API endpoints and deployment guide for querying Mezo protocol data using Goldsky-hosted subgraphs
+---
+
+Subgraphs provide indexed blockchain data through GraphQL APIs, enabling efficient querying of Mezo protocol data. This guide covers subgraph endpoints and deployment with Goldsky.
+
+## Overview
+
+Mezo subgraphs provide:
+
+<CardGroup cols={2}>
+  <Card title="Indexed Data" icon="database">
+    Fast access to blockchain data without scanning blocks
+  </Card>
+  <Card title="GraphQL API" icon="code">
+    Flexible querying with powerful filtering and sorting
+  </Card>
+  <Card title="Real-time Updates" icon="bolt">
+    Live synchronization with the blockchain
+  </Card>
+  <Card title="Custom Logic" icon="wand-magic-sparkles">
+    Transform and aggregate on-chain data
+  </Card>
+</CardGroup>
+
+## Development Setup
+
+### Prerequisites
+
+Before working with subgraphs, ensure you have:
+
+- Node.js 18+ (check repository's `.nvmrc` for exact version)
+- npm or yarn package manager
+- Git
+- Graph CLI
+- Goldsky account
+
+### Installation
+
+<CodeGroup>
+```bash Clone Repository
+git clone https://github.com/mezo-org/subgraphs.git
+cd subgraphs
+```
+
+```bash Install Dependencies
+npm install
+# or
+yarn install
+```
+
+```bash Install Graph CLI
+npm install -g @graphprotocol/graph-cli
+```
+</CodeGroup>
+
+## Repository Structure
+
+Mezo subgraph repositories contain:
+
+- **[schema.graphql](https://github.com/mezo-org/subgraphs/tree/main/schema)**: GraphQL schema definitions
+- **[subgraph.yaml](https://github.com/mezo-org/subgraphs/tree/main)**: Subgraph manifest configuration
+- **[src/](https://github.com/mezo-org/subgraphs/tree/main/src)**: Mapping logic (AssemblyScript)
+- **[abis/](https://github.com/mezo-org/subgraphs/tree/main/abis)**: Contract ABIs
+- **[tests/](https://github.com/mezo-org/subgraphs/tree/main/tests)**: Unit tests
+
+## Schema Definition
+
+Define your data models in `schema.graphql`:
+
+```graphql schema.graphql
+type Token @entity {
+  id: ID!
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigInt!
+}
+
+type Transfer @entity {
+  id: ID!
+  from: Bytes!
+  to: Bytes!
+  amount: BigInt!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+}
+```
+
+<Note>
+Use the `@entity` directive to mark types that should be stored and queryable.
+</Note>
+
+## Subgraph Manifest
+
+Configure your subgraph in `subgraph.yaml`:
+
+```yaml subgraph.yaml
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: MUSDToken
+    network: mezo-mainnet
+    source:
+      address: "0x..." # Contract address
+      abi: MUSD
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - Transfer
+      abis:
+        - name: MUSD
+          file: ./abis/MUSD.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/mapping.ts
+```
+
+## Mapping Logic
+
+Implement event handlers in `src/mapping.ts`:
+
+```typescript src/mapping.ts
+import { Transfer as TransferEvent } from "../generated/MUSDToken/MUSD"
+import { Transfer, Token } from "../generated/schema"
+import { BigInt } from "@graphprotocol/graph-ts"
+
+export function handleTransfer(event: TransferEvent): void {
+  // Create transfer entity
+  let transfer = new Transfer(
+    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+  )
+  
+  transfer.from = event.params.from
+  transfer.to = event.params.to
+  transfer.amount = event.params.value
+  transfer.timestamp = event.block.timestamp
+  transfer.transactionHash = event.transaction.hash
+  
+  transfer.save()
+  
+  // Update token entity
+  let token = Token.load("1")
+  if (token == null) {
+    token = new Token("1")
+    token.name = "Mezo USD"
+    token.symbol = "MUSD"
+    token.decimals = 18
+    token.totalSupply = BigInt.fromI32(0)
+  }
+  
+  token.save()
+}
+```
+
+## Code Generation
+
+Generate TypeScript types from your schema:
+
+<CodeGroup>
+```bash Generate Types
+graph codegen
+```
+
+```bash Build Subgraph
+graph build
+```
+</CodeGroup>
+
+## Testing
+
+### Unit Tests
+
+Write unit tests for your mappings:
+
+```typescript tests/musd.test.ts
+import { describe, test, assert } from "matchstick-as/assembly/index"
+import { handleTransfer } from "../src/mapping"
+import { createTransferEvent } from "./utils"
+
+describe("MUSD Transfer", () => {
+  test("Should create transfer entity", () => {
+    let event = createTransferEvent(
+      "0xfrom",
+      "0xto",
+      BigInt.fromI32(1000)
+    )
+    
+    handleTransfer(event)
+    
+    assert.fieldEquals(
+      "Transfer",
+      event.transaction.hash.toHex(),
+      "amount",
+      "1000"
+    )
+  })
+})
+```
+
+### Run Tests
+
+<CodeGroup>
+```bash Run All Tests
+npm test
+```
+
+```bash Run Graph Tests
+graph test
+```
+</CodeGroup>
+
+## Deployment with Goldsky
+
+### Setup Goldsky
+
+<CodeGroup>
+```bash Install Goldsky CLI
+npm install -g @goldsky/cli
+```
+
+```bash Authenticate
+goldsky login
+```
+</CodeGroup>
+
+<Note>
+Create a Goldsky account at [goldsky.com](https://goldsky.com) before authenticating.
+</Note>
+
+### Deploy Subgraph
+
+<CodeGroup>
+```bash Deploy to Goldsky
+# Deploy to Goldsky
+goldsky subgraph deploy <subgraph-name> <version>
+
+# Example
+goldsky subgraph deploy musd-subgraph 1.0.0
+```
+
+```bash Check Status
+# Check deployment status
+goldsky subgraph status <subgraph-name>
+
+# View logs
+goldsky subgraph logs <subgraph-name>
+```
+</CodeGroup>
+
+### Goldsky Configuration
+
+Create a Goldsky configuration file:
+
+```json goldsky.json
+{
+  "version": "1",
+  "name": "musd-subgraph",
+  "schema": "./schema.graphql",
+  "dataSources": [
+    {
+      "name": "MUSD",
+      "network": "mezo-mainnet",
+      "address": "0x...",
+      "startBlock": 0
+    }
+  ]
+}
+```
+
+## Querying Subgraphs
+
+### GraphQL Queries
+
+Once deployed, query your subgraph using GraphQL:
+
+<CodeGroup>
+```graphql Recent Transfers
+# Get recent transfers
+{
+  transfers(first: 10, orderBy: timestamp, orderDirection: desc) {
+    id
+    from
+    to
+    amount
+    timestamp
+    transactionHash
+  }
+}
+```
+
+```graphql Token Information
+# Get token information
+{
+  token(id: "1") {
+    name
+    symbol
+    decimals
+    totalSupply
+  }
+}
+```
+
+```graphql Filter by Address
+# Filter transfers by address
+{
+  transfers(where: { from: "0x..." }) {
+    id
+    to
+    amount
+    timestamp
+  }
+}
+```
+</CodeGroup>
+
+### Client Integration
+
+#### GraphQL Request
+
+Integrate subgraph queries using graphql-request:
+
+```typescript
+import { request, gql } from 'graphql-request'
+
+const endpoint = 'https://api.goldsky.com/api/public/project_...'
+
+const query = gql`
+  {
+    transfers(first: 10, orderBy: timestamp, orderDirection: desc) {
+      id
+      from
+      to
+      amount
+      timestamp
+    }
+  }
+`
+
+async function getTransfers() {
+  const data = await request(endpoint, query)
+  return data.transfers
+}
+```
+
+#### Apollo Client
+
+Use Apollo Client for React applications:
+
+```typescript
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+
+const client = new ApolloClient({
+  uri: 'https://api.goldsky.com/api/public/project_...',
+  cache: new InMemoryCache()
+})
+
+const GET_TRANSFERS = gql`
+  query GetTransfers {
+    transfers(first: 10, orderBy: timestamp, orderDirection: desc) {
+      id
+      from
+      to
+      amount
+      timestamp
+    }
+  }
+`
+
+client.query({ query: GET_TRANSFERS })
+  .then(result => console.log(result))
+```
+
+## Monitoring and Maintenance
+
+### Health Checks
+
+Monitor subgraph health and sync status:
+
+<CodeGroup>
+```bash Check Status
+# Check sync status
+goldsky subgraph status <subgraph-name>
+```
+
+```bash View Info
+# View sync lag
+goldsky subgraph info <subgraph-name>
+```
+</CodeGroup>
+
+### Updating Subgraphs
+
+Deploy new versions:
+
+```bash
+# Deploy updated version
+goldsky subgraph deploy <subgraph-name> <new-version>
+
+# Example
+goldsky subgraph deploy musd-subgraph 1.1.0
+```
+
+### Error Handling
+
+Common issues and solutions:
+
+1. **Sync Lag**: Check RPC endpoint health and connectivity
+2. **Failed Handlers**: Review mapping logic and error logs
+3. **Schema Mismatches**: Ensure schema matches deployed version
+
+## Best Practices
+
+### Schema Design
+
+<CardGroup cols={2}>
+  <Card title="Meaningful Names" icon="tag">
+    Use descriptive entity and field names
+  </Card>
+  <Card title="Clear Relationships" icon="diagram-project">
+    Define entity relationships properly
+  </Card>
+  <Card title="Index Fields" icon="magnifying-glass">
+    Index frequently queried fields
+  </Card>
+  <Card title="Immutable IDs" icon="fingerprint">
+    Use immutable, unique entity IDs
+  </Card>
+</CardGroup>
+
+### Mapping Logic
+
+- **Error Handling**: Handle null values and edge cases gracefully
+- **Gas Efficiency**: Minimize entity loads and saves
+- **Consistency**: Maintain data consistency across entities
+- **Testing**: Write comprehensive unit tests for all handlers
+
+### Performance
+
+- **Start Block**: Set appropriate start blocks to reduce sync time
+- **Batch Processing**: Process events efficiently in batches
+- **Caching**: Use entity caching to reduce database queries
+- **Pagination**: Implement proper pagination in queries
+
+<Note>
+For detailed subgraph schemas, deployment configurations, and protocol-specific mappings, refer to the individual subgraph repositories in the Mezo organization.
+</Note>
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="Goldsky Documentation" icon="book" href="https://docs.goldsky.com/">
+    Complete Goldsky platform documentation
+  </Card>
+  <Card title="The Graph Docs" icon="chart-network" href="https://thegraph.com/docs/">
+    Subgraph development guide
+  </Card>
+  <Card title="GraphQL Documentation" icon="code" href="https://graphql.org/">
+    GraphQL query language reference
+  </Card>
+  <Card title="AssemblyScript" icon="file-code" href="https://www.assemblyscript.org/">
+    Mapping language documentation
+  </Card>
+  <Card title="Mezo Discord" icon="discord" href="https://discord.com/invite/mezo">
+    Join the community for support
+  </Card>
+  <Card title="FAQ" icon="question" href="/resources/faqs">
+    Frequently asked questions
+  </Card>
+</CardGroup>

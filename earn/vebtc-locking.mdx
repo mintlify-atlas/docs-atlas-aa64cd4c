@@ -1,0 +1,190 @@
+---
+title: veBTC Locking
+description: Learn how to lock BTC to earn with veBTC, including voting power, rewards, and lock management
+---
+
+veBTC is the tokenized (NFT) representation of BTC locked on Mezo Network. Locking BTC gives you governance power and a share of protocol fees.
+
+## What is veBTC?
+
+When you lock BTC on Mezo, you receive a veBTC NFT that represents your locked position. This NFT gives you:
+
+<CardGroup cols={3}>
+  <Card title="Voting Power" icon="check-to-slot">
+    Direct emissions across the ecosystem through gauge voting
+  </Card>
+  
+  <Card title="Protocol Fees" icon="coins">
+    Earn from chain activity and bridging fees
+  </Card>
+  
+  <Card title="Governance Rights" icon="gavel">
+    Shape Mezo's economic future
+  </Card>
+</CardGroup>
+
+## How Voting Power Works
+
+Your veBTC weight depends on two factors: the amount of BTC locked (more BTC = more voting power) and your lock duration (longer locks = higher sustained weight).
+
+Your voting power decays linearly over time. A user who locks 1 BTC for 28 days starts with 1 veBTC, which decays to 0.5 after 14 days, and reaches 0 at expiration. You can extend your lock at any time to maintain full voting power.
+
+### Lock Parameters
+
+| Parameter | Value |
+|-----------|-------|
+| Minimum lock | 1 day |
+| Maximum lock | 28 days |
+| Lock decay | Linear — weight decreases continuously until reaching zero |
+
+## What You Earn
+
+### Passive Earnings (All veBTC Holders)
+
+All veBTC holders automatically receive a share of **chain and bridging fees** proportional to their voting weight. This is passive yield that accrues simply by holding veBTC — no voting required.
+
+### Active Earnings (Requires Voting)
+
+By voting for gauges, you earn additional rewards based on your vote allocation:
+
+- **Swap fees** from pools you vote for (when LPs stake in those gauges)
+- **MUSD interest/fee revenue** if you vote for the MUSD Savings Rate gauge
+- **Incentives** that protocols or users post to attract votes to specific gauges
+
+The more voting weight you allocate to a gauge, the larger your share of that gauge's fees and incentives.
+
+<Note>
+  You must vote each epoch to earn active rewards. See the Epochs section below.
+</Note>
+
+## Epochs
+
+Mezo Earn operates in **7-day cycles called epochs**. Each epoch begins on Thursday at 00:00 UTC.
+
+### Why Epochs Matter
+
+- **Votes do not persist.** You must vote every epoch to earn fees and emissions. If you don't vote in an epoch, you forfeit active earnings for that period.
+- **Votes cast in epoch N** determine emission allocation for epoch N+1
+- **Fees generated in epoch N** are distributed based on votes cast in epoch N
+
+### Lock Duration and Epoch Alignment
+
+Lock durations are aligned to epoch boundaries, not calendar days. When you create a lock, **your lock time is rounded down to the nearest full week**.
+
+This means:
+
+- A 28-day lock created mid-epoch will have an effective duration of approximately 21–28 days, depending on when you lock
+- Locks always expire at epoch transitions (Thursday 00:00 UTC)
+
+<Note>
+  If you select a 28-day max lock mid-epoch, your effective lock duration will be reduced based on the remaining time in the week — resulting in a lock of approximately 21–28 days.
+</Note>
+
+This normalization ensures all locks expire cleanly at epoch boundaries and simplifies voting weight calculations across the system.
+
+## How to Lock BTC
+
+<Steps>
+  <Step title="Prerequisites">
+    Ensure you have:
+    - BTC deposited on Mezo
+    - A connected wallet
+    - Sufficient BTC for gas fees
+  </Step>
+  
+  <Step title="Navigate to Lock">
+    - Open the Mezo app
+    - Click **Lock** in the left sidebar (under "Earn")
+    - You'll see your eligible assets
+  </Step>
+  
+  <Step title="Configure Lock">
+    Find the BTC asset card and click **Lock**:
+    - **Amount:** Enter the BTC amount to lock
+    - **Duration:** Select lock duration from 1 to 28 days
+    - Review your estimated initial veBTC voting power
+  </Step>
+  
+  <Step title="Confirm Transaction">
+    Review your lock details:
+    - BTC amount
+    - Lock duration
+    - Initial veBTC weight
+    - Lock expiration date
+    
+    Click **Confirm Lock** and approve the transaction in your wallet.
+  </Step>
+</Steps>
+
+## Managing Your Lock
+
+### Viewing Position Details
+
+Navigate to the Lock page to see:
+
+- **BTC locked** — Amount in your position
+- **Current veBTC** — Your voting power right now
+- **Lock expiration** — When you can withdraw
+- **Earnings** — Accumulated rewards
+
+### Extending Your Lock
+
+Maintain voting power by extending the lock duration before its expiration.
+
+<Steps>
+  <Step title="Access Position">
+    Go to the Lock page and select your veBTC position
+  </Step>
+  
+  <Step title="Extend Duration">
+    Click **Extend Lock** and select your new duration (1–28 days)
+  </Step>
+  
+  <Step title="Confirm Extension">
+    Confirm the extension to reset your voting weight
+  </Step>
+</Steps>
+
+### Claiming Rewards
+
+Voting rewards accrue throughout each epoch and become claimable once the epoch ends.
+
+<Steps>
+  <Step title="Navigate to Position">
+    Go to your veBTC position
+  </Step>
+  
+  <Step title="Claim">
+    Click **Claim Rewards** to receive your earned fees and incentives
+  </Step>
+</Steps>
+
+<Note>
+  Rewards don't compound automatically. You must claim and redeploy them manually.
+</Note>
+
+#### Claim Window
+
+You can claim chain fees accumulated over the epoch when the following epoch starts. Unclaimed earnings will continue to accumulate, but are only available for claim for **50 epochs**. Any unclaimed fees after this period are lost.
+
+## After Lock Expiration
+
+Once your lock expires, your voting power reaches zero and you can withdraw your BTC. You have three options:
+
+- **Create a new lock** — Lock again to regain voting power
+- **Wait** — Your BTC remains safe; you can decide later
+- **Withdraw** — Return your BTC to your wallet
+
+<Steps>
+  <Step title="Navigate to Expired Position">
+    Go to your expired position on the Lock page
+  </Step>
+  
+  <Step title="Withdraw">
+    Click **Withdraw**
+  </Step>
+  
+  <Step title="Receive BTC">
+    Your original BTC is returned to your wallet and the veBTC NFT is burned
+  </Step>
+</Steps>

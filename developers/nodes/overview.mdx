@@ -1,0 +1,54 @@
+---
+title: Mezo Nodes Overview
+description: Learn how Mezo Nodes operate and support network functionality for Bitcoin-based finance
+---
+
+Mezo Nodes are essential components of the network and are fully open-source. The [Mezo Validator Kit](/nodes/validator-kit) sets up the [mezod client](https://github.com/mezo-org/mezod) and the other requirements to run a node as a validator, an RPC node, or a seed node. The kit simplifies several deployment options such as Docker, a native daemon, and Helm for Kubernetes.
+
+## Quick Start
+
+- See [mezod](https://github.com/mezo-org/mezod) on GitHub
+- Use the [Validator Kit](/nodes/validator-kit) to run your own local seed node
+
+## Node Types
+
+Mezo supports three types of nodes, each serving a specific purpose in the network:
+
+### Validators
+
+Mezo Validators are responsible for running nodes that verify transactions, propose and attest new blocks, and participate in the consensus mechanism. Mezo Validators must apply for [Proof of Authority (PoA)](/nodes/validator-kit#validator-setup) before their nodes can participate as validators.
+
+Approved validators can follow the instructions for the [Validator Kit](/nodes/validator-kit) to learn how to run a validator node.
+
+See the [Validators](/nodes/validators) page for a list of current network validators.
+
+### RPC Nodes
+
+RPC nodes can be used to create a local endpoint for development or as part of a blockchain infrastructure-as-a-service (IaaS) platform. The process for setting up an RPC node is the same as a validator node, but you do not need to request Proof of Authority (PoA).
+
+To run an RPC node, follow the instructions in the [Validator Kit](/nodes/validator-kit) setup guide, but apply the additional configuration steps defined in the [RPC node setup](/nodes/validator-kit#rpc-node-setup) section.
+
+### Seed Nodes
+
+Seed nodes assist with network peer discovery. The process for setting up a seed node is the same as a validator node, but you do not need to request Proof of Authority (PoA).
+
+To run a seed node, follow the instructions in the [Validator Kit](/nodes/validator-kit) setup guide, but skip the application for PoA and set the `p2p.seed_mode` parameter in the node's config.toml file to `true`. See the [Network seed nodes](https://github.com/mezo-org/validator-kit?tab=readme-ov-file#network-seed-nodes) section for details.
+
+## Hardware Requirements
+
+Hardware requirements are different for each node type. See the [hardware requirements](/nodes/validator-kit#hardware-requirements) section to find the minimum requirements for each node type.
+
+<Note>
+For production deployments, it's recommended to use hardware that exceeds the minimum requirements to ensure optimal performance and reliability.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Validator Kit" icon="toolbox" href="/developers/nodes/validator-kit">
+    Set up and configure your Mezo node
+  </Card>
+  <Card title="Active Validators" icon="server" href="/developers/nodes/validators">
+    View the current network validators
+  </Card>
+</CardGroup>

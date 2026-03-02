@@ -1,0 +1,245 @@
+---
+title: Wormhole MUSD Bridge
+description: Technical guide for integrating with the Wormhole-powered MUSD bridge using Native Token Transfer protocol
+---
+
+The MUSD bridge is powered by Wormhole's Native Token Transfer (NTT) protocol, which enables secure cross-chain transfers while maintaining token fungibility.
+
+## Overview
+
+<Note>
+Wormhole's NTT protocol provides a secure and efficient way to transfer MUSD tokens across different blockchain networks while maintaining fungibility and security guarantees.
+</Note>
+
+For user-facing documentation about the MUSD bridge, see the [MUSD Bridge](/musd/bridge) page.
+
+## Integration Guide
+
+### Understanding NTT
+
+The Native Token Transfer (NTT) protocol by Wormhole ensures:
+
+- **Token Fungibility**: MUSD maintains its properties across chains
+- **Security**: Multi-guardian validation system
+- **Reliability**: Battle-tested cross-chain infrastructure
+- **Atomic Transfers**: Either completes fully or reverts entirely
+
+### Key Features
+
+<CardGroup cols={2}>
+  <Card title="Cross-Chain Transfer" icon="bridge">
+    Move MUSD seamlessly between supported blockchain networks
+  </Card>
+  
+  <Card title="Security Validation" icon="shield-check">
+    Multi-signature validation by Wormhole guardians
+  </Card>
+  
+  <Card title="Token Fungibility" icon="coins">
+    MUSD retains all properties across chains
+  </Card>
+  
+  <Card title="Developer Friendly" icon="code">
+    Simple integration with existing smart contracts
+  </Card>
+</CardGroup>
+
+## Smart Contract Integration
+
+### Prerequisites
+
+Before integrating with the MUSD bridge:
+
+1. Understand the [Wormhole NTT documentation](https://docs.wormhole.com/wormhole/native-token-transfers/overview)
+2. Review MUSD token contract addresses
+3. Set up Wormhole SDK in your project
+
+### Basic Transfer Flow
+
+<Steps>
+  <Step title="Approve Token Transfer">
+    User approves the NTT contract to spend their MUSD tokens.
+    
+    ```solidity
+    IERC20(musdToken).approve(nttManagerAddress, amount);
+    ```
+  </Step>
+  
+  <Step title="Initiate Transfer">
+    Call the NTT Manager contract to initiate the cross-chain transfer.
+    
+    ```solidity
+    INttManager(nttManagerAddress).transfer(
+      amount,
+      targetChain,
+      recipientAddress
+    );
+    ```
+  </Step>
+  
+  <Step title="Wait for Validation">
+    Wormhole guardians validate the transfer on the source chain.
+  </Step>
+  
+  <Step title="Claim on Destination">
+    Tokens become available on the destination chain after validation.
+  </Step>
+</Steps>
+
+### Example Integration
+
+<CodeGroup>
+
+```typescript TypeScript
+import { Wormhole } from '@wormhole-foundation/sdk';
+
+async function bridgeMUSD(
+  amount: bigint,
+  sourceChain: string,
+  targetChain: string,
+  recipientAddress: string
+) {
+  const wormhole = new Wormhole();
+  
+  // Initiate transfer
+  const transfer = await wormhole.ntt.transfer({
+    token: MUSD_TOKEN_ADDRESS,
+    amount: amount,
+    recipient: recipientAddress,
+    sourceChain: sourceChain,
+    targetChain: targetChain
+  });
+  
+  // Wait for confirmation
+  const receipt = await transfer.wait();
+  
+  return receipt;
+}
+```
+
+```solidity Solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface INttManager {
+    function transfer(
+        uint256 amount,
+        uint16 recipientChain,
+        bytes32 recipient
+    ) external payable returns (uint64 sequence);
+}
+
+contract MUSDIntegration {
+    address public immutable musdToken;
+    address public immutable nttManager;
+    
+    constructor(address _musd, address _nttManager) {
+        musdToken = _musd;
+        nttManager = _nttManager;
+    }
+    
+    function bridgeMUSD(
+        uint256 amount,
+        uint16 targetChain,
+        bytes32 recipient
+    ) external payable {
+        // Transfer MUSD from user
+        IERC20(musdToken).transferFrom(
+            msg.sender,
+            address(this),
+            amount
+        );
+        
+        // Approve NTT manager
+        IERC20(musdToken).approve(nttManager, amount);
+        
+        // Initiate cross-chain transfer
+        INttManager(nttManager).transfer{
+            value: msg.value
+        }(amount, targetChain, recipient);
+    }
+}
+```
+
+```python Python
+from wormhole import Wormhole
+
+def bridge_musd(
+    amount: int,
+    source_chain: str,
+    target_chain: str,
+    recipient_address: str
+):
+    wormhole = Wormhole()
+    
+    # Initiate transfer
+    transfer = wormhole.ntt.transfer(
+        token=MUSD_TOKEN_ADDRESS,
+        amount=amount,
+        recipient=recipient_address,
+        source_chain=source_chain,
+        target_chain=target_chain
+    )
+    
+    # Wait for confirmation
+    receipt = transfer.wait()
+    
+    return receipt
+```
+
+</CodeGroup>
+
+## Contract Addresses
+
+<Warning>
+Always verify contract addresses from official sources before integrating.
+</Warning>
+
+MUSD and NTT contract addresses will be published on the official documentation once deployed.
+
+## Best Practices
+
+### Gas Optimization
+
+<Note>
+Cross-chain transfers require gas on both source and destination chains. Ensure users have sufficient native tokens on both chains.
+</Note>
+
+### Error Handling
+
+```typescript
+try {
+  const transfer = await bridgeMUSD(amount, sourceChain, targetChain, recipient);
+  console.log('Transfer initiated:', transfer.sequence);
+} catch (error) {
+  if (error.code === 'INSUFFICIENT_ALLOWANCE') {
+    // Handle approval error
+  } else if (error.code === 'INSUFFICIENT_BALANCE') {
+    // Handle balance error
+  }
+}
+```
+
+### Monitoring Transfers
+
+Use Wormhole's APIs to track transfer status:
+
+```typescript
+const status = await wormhole.getTransferStatus(sequence, sourceChain);
+console.log('Transfer status:', status);
+```
+
+## Resources
+
+- [Wormhole NTT Documentation](https://docs.wormhole.com/wormhole/native-token-transfers/overview)
+- [Wormhole SDK](https://github.com/wormhole-foundation/wormhole-sdk-ts)
+- [MUSD User Guide](/musd/bridge)
+- [Wormhole Guardian Network](https://wormhole.com/network/)
+
+## Support
+
+For technical support and questions:
+
+- Join the [Mezo Discord](https://discord.com/invite/mezo)
+- Review [Wormhole documentation](https://docs.wormhole.com/)
+- Check [GitHub issues](https://github.com/mezo-org/musd)

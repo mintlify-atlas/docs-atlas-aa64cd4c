@@ -1,0 +1,166 @@
+---
+title: Deposit Assets to Mezo
+description: Guide to depositing your Bitcoin and supported assets into Mezo for self-service Bitcoin banking.
+---
+
+Deposit native Bitcoin or supported ERC-20 tokens (Bitcoin wrappers) to Mezo Mainnet to start earning, borrowing, and trading.
+
+## Before You Begin
+
+<Warning>
+All transactions on Mezo Mainnet are paid using native BTC or tBTC deposits. Before using the network, fund your account with BTC or tBTC to ensure you have gas to pay for transactions.
+</Warning>
+
+**Prerequisites:**
+- A [Mezo account](/getting-started/creating-an-account) created and signed in
+- Your wallet [connected to the Mezo network](/getting-started/connect-wallet)
+- Bitcoin or supported ERC-20 tokens to deposit
+
+**Check supported assets:**
+
+You can confirm the token addresses for supported assets on the [Contracts Reference](/resources/contracts#mainnet-asset-token-contracts) page.
+
+## Deposit Your Assets
+
+<Steps>
+  <Step title="Access the Mezo App">
+    Go to the [Mezo App](https://mezo.org/overview) and sign in with your supported wallet
+  </Step>
+  
+  <Step title="Initiate Deposit">
+    After you sign in and sign the transaction, click **Deposit Bitcoin**
+  </Step>
+  
+  <Step title="Select Asset and Amount">
+    Select the asset you want to bridge and specify the amount
+    
+    ![Deposit Modal Preview](/images/mainnet/deposit-modal-preview.png)
+  </Step>
+  
+  <Step title="Review Transaction">
+    Click **Review** to review the transfer and generate a deposit address
+  </Step>
+  
+  <Step title="Verify Details">
+    Check the details of the transfer and make sure that they are correct
+    
+    <Info>
+    Double-check the deposit amount, asset type, and any associated fees before proceeding.
+    </Info>
+  </Step>
+  
+  <Step title="Copy Deposit Address">
+    When you are ready to deposit the assets, copy the wallet address. Ensure that the address is displayed correctly in your wallet
+    
+    ![Deposit Address Screen](/images/mainnet/deposit-modal-address-screen.png)
+    
+    <Warning>
+    Always verify the deposit address is correct before sending assets. Sending to an incorrect address may result in permanent loss of funds.
+    </Warning>
+  </Step>
+  
+  <Step title="Confirm Transaction">
+    If the transaction is acceptable, confirm the transaction in your wallet
+  </Step>
+</Steps>
+
+## After Depositing
+
+After the transaction is confirmed on the source network, the bridging process begins. The process can take several minutes to complete before you receive your assets on Mainnet.
+
+**What happens during bridging:**
+1. Your transaction is confirmed on the source blockchain
+2. The bridge validators verify the transaction
+3. Assets are minted or released on Mezo Mainnet
+4. Assets appear in your Mezo account balance
+
+<Note>
+Bridging times vary depending on network congestion and the asset being bridged. Bitcoin deposits typically require multiple confirmations before processing.
+</Note>
+
+## Supported Assets
+
+Mezo supports:
+- **Native Bitcoin (BTC)**: The primary asset for the Mezo network
+- **tBTC**: The most battle-tested decentralized Bitcoin bridge with 24k+ BTC bridged since 2020
+- **Wrapped Bitcoin tokens**: Various ERC-20 Bitcoin wrappers (check the Contracts Reference for the full list)
+
+## Transaction Fees
+
+**Gas fees on Mezo:**
+- All transactions are paid in BTC (18 decimals)
+- Ensure you have sufficient BTC for gas before performing operations on Mezo
+
+**Bridging fees:**
+- Bridge fees vary depending on the source network and asset
+- Fees are displayed in the review screen before confirming your deposit
+
+## Video Tutorial
+
+Watch this step-by-step guide on depositing to Mezo:
+
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/DinlFeUZB3U"
+  title="How to Deposit to Mezo"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Deposit not appearing">
+    - Check the transaction status on the source blockchain explorer
+    - Wait for sufficient confirmations (Bitcoin requires multiple confirmations)
+    - Verify you sent to the correct deposit address
+    - Check the Mezo explorer to see if the bridge transaction is processing
+  </Accordion>
+  
+  <Accordion title="Insufficient gas for transactions">
+    - Ensure you have BTC or tBTC in your Mezo account for gas fees
+    - If this is your first deposit, make sure to include extra BTC for future transactions
+    - You can always deposit more BTC later for gas
+  </Accordion>
+  
+  <Accordion title="Unsupported asset error">
+    - Verify the asset is listed in the [Contracts Reference](/resources/contracts#mainnet-asset-token-contracts)
+    - Check that you're using the correct token contract address
+    - Some wrapped Bitcoin variants may not be supported
+  </Accordion>
+  
+  <Accordion title="Transaction stuck or pending">
+    - Network congestion can cause delays in processing
+    - Check both source and destination blockchain explorers
+    - If stuck for an extended period, contact support on [Discord](https://discord.mezo.org)
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Once your assets are deposited:
+
+<CardGroup cols={2}>
+  <Card title="Borrow MUSD" icon="coins" href="/musd/mint-musd">
+    Access fixed-rate loans starting at 1% against your Bitcoin collateral
+  </Card>
+  <Card title="Earn Yield" icon="chart-line" href="/earn/overview">
+    Deposit into yield vaults to earn returns on your BTC or MUSD
+  </Card>
+  <Card title="Trade & Swap" icon="arrow-right-arrow-left" href="/earn/overview">
+    Swap between BTC, MUSD, and other assets on Mezo
+  </Card>
+  <Card title="Mezo Market" icon="credit-card" href="/musd/overview">
+    Spend MUSD on real goods and services
+  </Card>
+</CardGroup>
+
+## Need Help?
+
+If you encounter any issues:
+
+- Join the community: [discord.mezo.org](https://discord.mezo.org)
+- Check the [documentation](/users)
+- Follow updates: [@MezoNetwork](https://x.com/MezoNetwork)

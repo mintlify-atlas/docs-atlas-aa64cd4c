@@ -1,0 +1,162 @@
+---
+title: Mezo Bridge Overview
+description: Learn how to integrate with Mezo Bridge for native asset movement between Bitcoin, Ethereum, and Mezo
+---
+
+Mezo Bridge enables native asset movement between Bitcoin, Ethereum, and Mezo. Below are the primary flows with references to the design RFCs.
+
+## Bridge In to Mezo
+
+### From Bitcoin to Mezo
+
+<Steps>
+  <Step title="Lock BTC">
+    Lock BTC to the bridge-controlled address with metadata identifying the Mezo recipient.
+  </Step>
+  
+  <Step title="Submit Proof">
+    Submit proof and attestation to Mezo Bridge contract.
+  </Step>
+  
+  <Step title="Verify Proof">
+    Contract verifies proof.
+  </Step>
+  
+  <Step title="Mint Asset">
+    Mint corresponding asset on Mezo to recipient.
+  </Step>
+</Steps>
+
+### From Ethereum to Mezo
+
+<Steps>
+  <Step title="Lock ERC-20">
+    Lock the ERC-20 on Ethereum via the Mezo Bridge contract, emitting an `AssetLocked` event with Mezo recipient.
+  </Step>
+  
+  <Step title="Validators Listen">
+    Bridge validators listen for such events.
+  </Step>
+  
+  <Step title="Validate Events">
+    Bridge validators validate events inclusion and validator quorum.
+  </Step>
+  
+  <Step title="Mint Asset">
+    Mint corresponding asset on Mezo to recipient.
+  </Step>
+</Steps>
+
+## Bridge Out of Mezo
+
+### From Mezo to Bitcoin
+
+<Steps>
+  <Step title="Burn Asset">
+    Burn the asset on Mezo specifying the Bitcoin recipient address.
+  </Step>
+  
+  <Step title="Submit Proof">
+    Submit proof and attestation to Mezo Bridge contract.
+  </Step>
+  
+  <Step title="Verify Proof">
+    Contract verifies proof.
+  </Step>
+  
+  <Step title="Release BTC">
+    Upon verification, BTC is released to the recipient address.
+  </Step>
+</Steps>
+
+### From Mezo to Ethereum
+
+<Steps>
+  <Step title="Burn Asset">
+    Burn the asset on Mezo specifying the Ethereum recipient.
+  </Step>
+  
+  <Step title="Validators Listen">
+    Bridge validators listen for `AssetsUnlocked` events.
+  </Step>
+  
+  <Step title="Validate Events">
+    Bridge validators validate events inclusion and validator quorum.
+  </Step>
+  
+  <Step title="Release ERC-20">
+    Upon verification, the ERC-20 is released to the recipient.
+  </Step>
+</Steps>
+
+## Architecture
+
+<Note>
+The Mezo Bridge architecture consists of three key components:
+
+- **Lock/Burn on Source**: Assets are locked on Bitcoin/Ethereum (or burned on Mezo) with data that identifies the intended recipient and target chain.
+- **Attestation & Relay**: Offchain clients produce attestations over source-chain events and relay proofs to the destination chain.
+- **Mint/Release on Destination**: Upon valid attestation and proof verification, destination contracts mint wrapped assets or release locked funds.
+</Note>
+
+## Core Flow
+
+<Steps>
+  <Step title="Initiate Transfer">
+    User initiates a bridge transfer specifying destination address and amount.
+  </Step>
+  
+  <Step title="Emit Event">
+    Source-chain contract/event is emitted after lock/burn; event includes unique sequence ID and parameters.
+  </Step>
+  
+  <Step title="Submit Proof">
+    Offchain client collects confirmations/finality per RFC thresholds and submit proof+attestation to destination contract.
+  </Step>
+  
+  <Step title="Verify">
+    Destination verifies:
+    - Event authenticity
+    - Validator quorum/signatures
+  </Step>
+  
+  <Step title="Execute">
+    On success, destination executes mint/release and records completion.
+  </Step>
+</Steps>
+
+## Smart Contracts
+
+### Mainnet
+
+<ParamField path="Mezo Bridge" type="address">
+  [0xF6680EA3b480cA2b72D96ea13cCAF2cFd8e6908c](https://etherscan.io/address/0xF6680EA3b480cA2b72D96ea13cCAF2cFd8e6908c)
+</ParamField>
+
+<ParamField path="Bridged Tokens" type="list">
+  See [bridged tokens list](https://mezo.org/docs/users/resources/contracts#bridged-tokens)
+</ParamField>
+
+### Sepolia Testnet
+
+<ParamField path="Mezo Bridge" type="address">
+  [0x3a3BaE133739f92a885070DbF3300d61B232497C](https://sepolia.etherscan.io/address/0x3a3BaE133739f92a885070DbF3300d61B232497C)
+</ParamField>
+
+<ParamField path="Bridged Tokens" type="list">
+  See [bridged tokens list](https://mezo.org/docs/users/resources/contracts#bridged-tokens)
+</ParamField>
+
+## Security
+
+<Warning>
+Please review the [Audits](https://github.com/mezo-org/audits) page for the latest security audits before integrating with the bridge.
+</Warning>
+
+## Additional Resources
+
+For full technical details, message formats, and security rationale, see the following RFCs:
+
+- [RFC-2: Mezo Bridge](https://github.com/mezo-org/mezod/blob/main/docs/rfc/rfc-2.md)
+- [RFC-4: Mezo Bridge](https://github.com/mezo-org/mezod/blob/main/docs/rfc/rfc-4.md)
+- [RFC-5: Mezo Bridge](https://github.com/mezo-org/mezod/blob/main/docs/rfc/rfc-5.md)

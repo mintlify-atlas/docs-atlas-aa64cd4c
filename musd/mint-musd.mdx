@@ -1,0 +1,95 @@
+---
+title: How to Borrow & Mint MUSD
+description: Step-by-step guide for borrowing against your BTC and minting MUSD.
+---
+
+[MUSD](https://mezo.org/feature/musd) is available on Mezo Mainnet and available for testing on Mezo Testnet. This guide shows you how to complete the borrow process using Mezo Testnet as an example or as a way to borrow and mint MUSD for development purposes. Later, go to the [Mezo App](https://mezo.org) and sign in on Mainnet to borrow and mint real MUSD.
+
+<Note>
+The minimum loan size is **1,800 MUSD** of borrowed debt. With the 200 MUSD gas deposit, your total debt at opening is at least 2,000 MUSD. This is a minimum *borrow* amount, not a collateral floor — the collateral you need depends on your desired collateral ratio.
+</Note>
+
+## Before You Begin
+
+Before you can get testnet MUSD, you must complete the following steps:
+
+- Go to [mezo.org](https://mezo.org/) and click **Sign in** to connect to your Mezo account.
+- Connect an Ethereum wallet to Mezo Testnet. See the [Connect to Mezo Testnet](/getting-started/connect-wallet) guide for instructions.
+- Get testnet BTC on Testnet. You can request testnet BTC in [Discord](https://discord.com/invite/mezo).
+- Add the MUSD token to your wallet. You can add the token using the UI on the Mezo Explorer. Click the **Add token to MetaMask** button next to the MUSD token address:
+  - Mainnet: [0xdD468A1DDc392dcdbEf6db6e34E89AA338F9F186](https://explorer.mezo.org/token/0xdD468A1DDc392dcdbEf6db6e34E89AA338F9F186)
+  - Testnet: [0x118917a40FAF1CD7a13dB0Ef56C86De7973Ac503](https://explorer.test.mezo.org/token/0x118917a40FAF1CD7a13dB0Ef56C86De7973Ac503)
+
+## Borrow and Mint MUSD
+
+After you sign in to [mezo.org](https://mezo.org/) on an account with testnet BTC, you can borrow MUSD.
+
+<Steps>
+  <Step title="Navigate to the Borrow Page">
+    In your browser, open [mezo.org/feature/borrow](https://mezo.org/feature/borrow).
+  </Step>
+
+  <Step title="Start the Borrow Process">
+    Click the **Let's Go** button to start the borrow process.
+  </Step>
+
+  <Step title="Specify Loan Details">
+    Specify the amount of MUSD you want to borrow and the amount of BTC you want to use as collateral.
+
+    <Info>
+    The interface will show you your collateralization ratio in real-time. Aim for at least 150% to maintain a healthy buffer against market volatility.
+    </Info>
+  </Step>
+
+  <Step title="Review Your Loan">
+    Click **Review** to open the summary before you confirm. Check the summary details to confirm the information is as you expect, including:
+    - Borrow amount
+    - Collateral amount
+    - Interest rate (fixed 1-5%)
+    - Collateralization ratio
+    - Total fees
+  </Step>
+
+  <Step title="Confirm Network">
+    Ensure that your browser wallet is actively set to Mezo Testnet.
+  </Step>
+
+  <Step title="Submit Transaction">
+    When you are ready to proceed with the borrow and mint process, click **Confirm**. Your browser wallet prompts you to confirm the transaction and pay the gas fees using BTC on Testnet.
+  </Step>
+</Steps>
+
+After the process is complete, you can check the loan status on [mezo.org/feature/borrow](https://mezo.org/feature/borrow).
+
+## Understand the Borrowing Terms
+
+<Info>
+Mezo offers a fixed, low-interest rate for MUSD loans. Initial rates range from **1-5%**. There is no forced repayment date on Mezo, so you can keep your position open as long as you want, provided your collateral remains sufficient.
+</Info>
+
+While there's no fixed repayment schedule, you still need to watch for liquidation risks if the value of your collateral (BTC) falls.
+
+Interest accrues on the borrowed amount (the minted MUSD), so be mindful of how your debt grows over time. When you're ready to close your position, you'll need enough MUSD to cover your principal plus any accrued interest or fees.
+
+### Key Terms to Remember
+
+- **Fixed Interest Rate**: Your rate is locked when you open your loan and never changes (unless you refinance)
+- **Minimum Collateral Ratio**: 110% to avoid liquidation
+- **Recommended Ratio**: 150% or higher for safety
+- **Minimum Loan Size**: 1,800 MUSD
+- **Gas Deposit**: 200 MUSD (refunded when you close your loan)
+
+## Manage Your Loan
+
+<Warning>
+Once you have an active loan, you should monitor it regularly to ensure your collateral ratio stays above 110%. If your ratio falls below this threshold, your position can be liquidated.
+</Warning>
+
+You can manage your loan through the Mezo App:
+
+- **Add Collateral**: Increase your BTC collateral to improve your ratio
+- **Repay Debt**: Pay back some or all of your MUSD to reduce your debt
+- **Close Position**: Repay your full debt plus interest to get your BTC back
+- **Refinance**: Adjust your loan to a new interest rate (0.1% fee applies)
+
+For more information about liquidation risks and how to protect your position, see [Liquidations & Redemptions](/musd/liquidation).

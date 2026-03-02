@@ -1,0 +1,149 @@
+---
+title: Deploying Incentives
+description: How to create voting gauges for whitelisted pool assets on Mezo Earn and deploy incentive programs
+---
+
+All Mezo assets (BTC, MEZO, and mainnet contract tokens) have been whitelisted in the PoolsVoter contract. Anyone can now create voting gauges for pools whose both assets are on the whitelist.
+
+<Note>
+  For a full list of whitelisted token addresses that can be added as incentives on the gauges, see the [Contracts Reference](/resources/contracts#portal-contract-addresses).
+</Note>
+
+## Creating a Pool Gauge
+
+<Steps>
+  <Step title="Navigate to PoolsVoter contract">
+    Go to the [PoolsVoter contract on the Mezo Explorer](https://explorer.mezo.org/address/0x48233cCC97B87Ba93bCA212cbEe48e3210211f03) and connect your wallet.
+  </Step>
+
+  <Step title="Access contract write functions">
+    Click the **Contract** tab, then select **Write proxy** and choose `createPoolGauge`.
+  </Step>
+
+  <Step title="Configure pool factory address">
+    For the `_poolFactory` parameter, use one of the following addresses:
+    
+    - **Basic pools:** `0x83FE469C636C4081b87bA5b3Ae9991c6Ed104248`
+    - **CL pools:** `0xBB24AF5c6fB88F1d191FA76055e30BF881BeEb79`
+  </Step>
+
+  <Step title="Enter pool address">
+    Enter the pool address under `_pool`.
+  </Step>
+
+  <Step title="Execute transaction">
+    Execute the transaction. If the pool is listed in the pools overview, it should start appearing in the vote UI as well.
+  </Step>
+</Steps>
+
+## Pool Factory Addresses
+
+<CodeGroup>
+```text Basic Pools
+0x83FE469C636C4081b87bA5b3Ae9991c6Ed104248
+```
+
+```text CL Pools
+0xBB24AF5c6fB88F1d191FA76055e30BF881BeEb79
+```
+</CodeGroup>
+
+## PoolsVoter Contract
+
+<ParamField path="_poolFactory" type="address" required>
+  The address of the pool factory contract. Use the Basic pools address for standard AMM pools or the CL pools address for concentrated liquidity pools.
+</ParamField>
+
+<ParamField path="_pool" type="address" required>
+  The address of the pool for which you want to create a voting gauge. Both tokens in the pool must be whitelisted.
+</ParamField>
+
+## Requirements
+
+<Note>
+  **Whitelisted Assets**: Both tokens in the pool must be whitelisted in the PoolsVoter contract. All Mezo assets (BTC, MEZO, and mainnet contract tokens) are pre-whitelisted.
+</Note>
+
+<Note>
+  **Pool Existence**: The pool must already exist and be deployed through one of the supported pool factories.
+</Note>
+
+## Programmatic Integration
+
+You can also create pool gauges programmatically using ethers.js or similar libraries:
+
+```typescript
+import { ethers } from 'ethers';
+
+const POOLS_VOTER_ADDRESS = '0x48233cCC97B87Ba93bCA212cbEe48e3210211f03';
+const BASIC_POOL_FACTORY = '0x83FE469C636C4081b87bA5b3Ae9991c6Ed104248';
+const CL_POOL_FACTORY = '0xBB24AF5c6fB88F1d191FA76055e30BF881BeEb79';
+
+async function createPoolGauge(
+  signer: ethers.Signer,
+  poolAddress: string,
+  isConcentratedLiquidity: boolean = false
+) {
+  // Connect to PoolsVoter contract
+  const poolsVoter = new ethers.Contract(
+    POOLS_VOTER_ADDRESS,
+    POOLS_VOTER_ABI,
+    signer
+  );
+  
+  // Select appropriate pool factory
+  const poolFactory = isConcentratedLiquidity 
+    ? CL_POOL_FACTORY 
+    : BASIC_POOL_FACTORY;
+  
+  // Create pool gauge
+  const tx = await poolsVoter.createPoolGauge(
+    poolFactory,
+    poolAddress
+  );
+  
+  // Wait for confirmation
+  const receipt = await tx.wait();
+  
+  console.log(`Pool gauge created: ${receipt.transactionHash}`);
+  
+  return receipt;
+}
+```
+
+## Example Usage
+
+```typescript
+// Example: Create a gauge for MUSD/BTC pool
+const MUSD_BTC_POOL = '0x52e604c44417233b6CcEDDDc0d640A405Caacefb';
+
+await createPoolGauge(
+  signer,
+  MUSD_BTC_POOL,
+  false // Basic pool, not CL
+);
+```
+
+## Verification
+
+After creating a pool gauge:
+
+1. Check the transaction on [Mezo Explorer](https://explorer.mezo.org)
+2. Verify the gauge appears in the pools overview
+3. Confirm the gauge is visible in the vote UI
+
+## Troubleshooting
+
+<Note>
+  **Transaction Fails**: Ensure both tokens in the pool are whitelisted. Check that you're using the correct pool factory address for your pool type.
+</Note>
+
+<Note>
+  **Gauge Not Appearing**: It may take a few minutes for the gauge to appear in the UI after creation. Try refreshing the page or clearing your cache.
+</Note>
+
+## Additional Resources
+
+- [Mezo Explorer - PoolsVoter Contract](https://explorer.mezo.org/address/0x48233cCC97B87Ba93bCA212cbEe48e3210211f03)
+- [Contracts Reference](/resources/contracts)
+- [Mezo Pools Documentation](/developers/features/mezo-pools)

@@ -1,0 +1,143 @@
+---
+title: Build on Mezo
+description: Transform Bitcoin from a passive store of value into a productive, dynamic financial asset with Mezo's EVM-compatible blockchain.
+---
+
+Mezo is engineered to transform Bitcoin from a passive store of value into a productive, dynamic financial asset. By combining the security of Bitcoin with the flexibility of a modern blockchain, Mezo provides a robust platform for decentralized applications (dApps) that serve the massive, underserved Bitcoin community.
+
+## Why Build on Mezo?
+
+<CardGroup cols={2}>
+  <Card title="EVM Compatibility" icon="code">
+    Fully EVM-compatible blockchain allowing Solidity developers to deploy existing smart contracts using familiar tools like Hardhat and Foundry with minimal code changes.
+  </Card>
+  
+  <Card title="BTC as Gas" icon="bitcoin">
+    All transaction fees on Mezo are paid in BTC, reinforcing Bitcoin's utility as a transactional asset and eliminating the need for alternative gas tokens.
+  </Card>
+  
+  <Card title="Cosmos SDK Base" icon="cubes">
+    Built on the Cosmos SDK with CometBFT consensus engine, providing chain sovereignty, high throughput, and robust infrastructure.
+  </Card>
+  
+  <Card title="Bitcoin-First Design" icon="shield">
+    Native BTC integration with tBTC bridging for reliable cross-chain Bitcoin transfers and a dual staking model for rewards.
+  </Card>
+</CardGroup>
+
+## Quick Start
+
+Get started building on Mezo in minutes:
+
+<Steps>
+  <Step title="Configure Your Environment">
+    Set up Hardhat or Foundry with Mezo network parameters and RPC endpoints.
+    
+    [Configure Environment](/getting-started/environment)
+  </Step>
+  
+  <Step title="Get Testnet BTC">
+    Obtain Testnet BTC from the official Mezo Faucet to pay for gas fees.
+    
+    [Get Testnet BTC](https://faucet.test.mezo.org/)
+  </Step>
+  
+  <Step title="Deploy Your Contract">
+    Deploy your Solidity smart contracts to Mezo Testnet using your existing development workflow.
+  </Step>
+  
+  <Step title="Integrate Mezo Passport (Optional)">
+    Add support for both Bitcoin and EVM wallets with the Mezo Passport library.
+    
+    [Setup Mezo Passport](/getting-started/mezo-passport)
+  </Step>
+</Steps>
+
+## Core Development Components
+
+<CardGroup cols={2}>
+  <Card title="MUSD Stablecoin" icon="dollar-sign" href="/musd/overview">
+    Integrate MUSD, the native Bitcoin-backed stablecoin, for payments, liquidity, and financial products.
+  </Card>
+  
+  <Card title="Mezo Passport" icon="wallet" href="/developers/getting-started/mezo-passport">
+    Official wallet connection library supporting both native Bitcoin wallets and standard EVM wallets.
+  </Card>
+  
+  <Card title="Mezod Client" icon="server" href="/developers/getting-started/mezod">
+    The reference client implementation for the Mezo chain, built on Cosmos SDK with EVM compatibility.
+  </Card>
+  
+  <Card title="Validator Kit" icon="network-wired" href="/developers/nodes/validator-kit">
+    Set up and run Mezo nodes with Docker, native, Helm, or manual deployment options.
+  </Card>
+</CardGroup>
+
+## Network Information
+
+### Testnet
+
+| Parameter | Value |
+|-----------|-------|
+| Network Name | Mezo Testnet |
+| RPC Endpoint (HTTPS) | `https://rpc.test.mezo.org` |
+| RPC Endpoint (WSS) | `wss://rpc-ws.test.mezo.org` |
+| Chain ID | `31611` |
+| Native Currency | BTC |
+| Decimals | 18 |
+| Block Explorer | [explorer.test.mezo.org](https://explorer.test.mezo.org/) |
+| Faucet | [faucet.test.mezo.org](https://faucet.test.mezo.org/) |
+
+### Mainnet
+
+| Parameter | Value |
+|-----------|-------|
+| Network Name | Mezo Mainnet |
+| Chain ID | `31612` |
+| Native Currency | BTC |
+| Decimals | 18 |
+| Block Explorer | [explorer.mezo.org](https://explorer.mezo.org/) |
+
+<Note>
+For production deployments, use a dedicated RPC provider for higher rate limits and stability. See [Configure Environment](/getting-started/environment) for recommended RPC providers.
+</Note>
+
+## Developer Resources
+
+<CardGroup cols={3}>
+  <Card title="Getting Started" icon="rocket" href="/developers/getting-started/environment">
+    Configure your development environment and deploy your first contract
+  </Card>
+  
+  <Card title="dApp Requirements" icon="list-check" href="/developers/developers/getting-started/dapp-requirements">
+    Requirements for featuring your dApp in the Mezo Market
+  </Card>
+  
+  <Card title="Integrations" icon="plug" href="/developers/getting-started/integrations">
+    Discover services and partners integrated with Mezo
+  </Card>
+  
+  <Card title="Architecture" icon="diagram-project" href="/developers/architecture/oracles">
+    Learn about Mezo's technical architecture and design
+  </Card>
+  
+  <Card title="Bridge" icon="bridge" href="/developers/bridge/mezo-bridge">
+    Cross-chain bridging with tBTC and Wormhole
+  </Card>
+  
+  <Card title="Mezo Nodes" icon="server" href="/developers/nodes/overview">
+    Run validators, RPC nodes, or seed nodes on Mezo
+  </Card>
+</CardGroup>
+
+## Join the Community
+
+<CardGroup cols={2}>
+  <Card title="Discord" icon="discord" href="https://discord.com/invite/mezo">
+    Join the Mezo Discord for development support and community discussions
+  </Card>
+  
+  <Card title="GitHub" icon="github" href="https://github.com/mezo-org">
+    Explore Mezo repositories, contribute, and report issues
+  </Card>
+</CardGroup>

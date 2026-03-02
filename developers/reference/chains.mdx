@@ -1,0 +1,335 @@
+---
+title: Chain Configuration
+description: Network details, RPC endpoints, chain IDs, and block explorers for Mezo networks
+---
+
+Complete reference for Mezo network configurations including mainnet, testnet, and local development environments.
+
+## Network Endpoints
+
+<CardGroup cols={2}>
+  <Card title="Mainnet" icon="globe">
+    Production network for live deployments
+  </Card>
+  <Card title="Testnet" icon="flask">
+    Testing environment for development
+  </Card>
+</CardGroup>
+
+### Mainnet Configuration
+
+The Mezo mainnet is the production network for live deployments.
+
+<CodeGroup>
+```json Network Details
+{
+  "chain_id": "mezo-mainnet",
+  "rpc_endpoint": "https://rpc.mezo.org",
+  "websocket": "wss://rpc.mezo.org/websocket",
+  "explorer": "https://explorer.mezo.org"
+}
+```
+
+```json Genesis Configuration
+{
+  "chain_id": "mezo-mainnet",
+  "genesis_time": "2024-01-01T00:00:00Z",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "22020096",
+      "max_gas": "-1"
+    },
+    "evidence": {
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000"
+    }
+  }
+}
+```
+</CodeGroup>
+
+**Key Endpoints:**
+- **Chain ID**: `mezo-mainnet`
+- **RPC Endpoint**: `https://rpc.mezo.org`
+- **WebSocket**: `wss://rpc.mezo.org/websocket`
+- **Block Explorer**: `https://explorer.mezo.org`
+
+### Testnet Configuration
+
+The Mezo testnet provides a safe environment for testing and development.
+
+<CodeGroup>
+```json Network Details
+{
+  "chain_id": "mezo-testnet",
+  "rpc_endpoint": "https://testnet-rpc.mezo.org",
+  "websocket": "wss://testnet-rpc.mezo.org/websocket",
+  "explorer": "https://testnet-explorer.mezo.org"
+}
+```
+
+```bash Environment Variables
+export CHAIN_ID="mezo-testnet"
+export RPC_ENDPOINT="https://testnet-rpc.mezo.org"
+export EXPLORER_URL="https://testnet-explorer.mezo.org"
+```
+</CodeGroup>
+
+**Key Endpoints:**
+- **Chain ID**: `mezo-testnet`
+- **RPC Endpoint**: `https://testnet-rpc.mezo.org`
+- **WebSocket**: `wss://testnet-rpc.mezo.org/websocket`
+- **Block Explorer**: `https://testnet-explorer.mezo.org`
+
+### Local Development
+
+Configuration for running a local Mezo node.
+
+```json Network Details
+{
+  "chain_id": "mezo-local",
+  "rpc_endpoint": "http://localhost:26657",
+  "websocket": "ws://localhost:26657/websocket"
+}
+```
+
+**Key Endpoints:**
+- **Chain ID**: `mezo-local`
+- **RPC Endpoint**: `http://localhost:26657`
+- **WebSocket**: `ws://localhost:26657/websocket`
+
+## Chain Parameters
+
+### Consensus Configuration
+
+Core consensus parameters for the Mezo chain.
+
+```toml config.toml
+[consensus]
+timeout_commit = "1s"
+timeout_propose = "3s"
+timeout_propose_delta = "500ms"
+timeout_prevote = "1s"
+timeout_prevote_delta = "500ms"
+timeout_precommit = "1s"
+timeout_precommit_delta = "500ms"
+```
+
+### P2P Configuration
+
+Peer-to-peer network settings.
+
+```toml config.toml
+[p2p]
+laddr = "tcp://0.0.0.0:26656"
+external_address = "YOUR_EXTERNAL_IP:26656"
+persistent_peers = "peer1@ip1:26656,peer2@ip2:26656"
+unconditional_peer_ids = ""
+```
+
+### API Configuration
+
+REST API and service settings.
+
+```toml app.toml
+[api]
+enable = true
+swagger = false
+address = "tcp://0.0.0.0:1317"
+max_open_connections = 1000
+rpc_read_timeout = "10s"
+rpc_write_timeout = "10s"
+rpc_max_body_bytes = 1000000
+```
+
+## EVM Configuration
+
+### Ethereum Compatibility
+
+EVM-compatible settings for Ethereum tooling integration.
+
+<CodeGroup>
+```toml RPC Settings
+[evm]
+rpc_address = "0.0.0.0:8545"
+ws_address = "0.0.0.0:8546"
+api_address = "0.0.0.0:1317"
+max_gas_price = "1000000000000"
+min_gas_price = "1000000000"
+```
+
+```toml Gas Configuration
+[evm.gas]
+base_fee = "1000000000"
+min_gas_price = "1000000000"
+max_gas_price = "1000000000000"
+```
+</CodeGroup>
+
+<Note>
+The EVM configuration enables compatibility with Ethereum development tools like MetaMask, Hardhat, and Foundry.
+</Note>
+
+## Deployment
+
+### Docker Deployment
+
+Deploy a Mezo node using Docker Compose.
+
+```yaml docker-compose.yml
+version: '3.8'
+
+services:
+  mezod:
+    image: mezod:latest
+    container_name: mezod-node
+    ports:
+      - "26656:26656"  # P2P
+      - "26657:26657"  # RPC
+      - "1317:1317"    # API
+      - "8545:8545"    # EVM RPC
+    volumes:
+      - ./config:/root/.mezod/config
+      - ./data:/root/.mezod/data
+    environment:
+      - CHAIN_ID=mezo-testnet
+      - NODE_TYPE=validator
+    command: mezod start
+```
+
+### Automated Deployment Script
+
+Bash script for deploying a Mezo node.
+
+```bash deploy-chain.sh
+#!/bin/bash
+set -e
+
+CHAIN_ID=${1:-"mezo-testnet"}
+NODE_TYPE=${2:-"validator"}
+
+echo "Deploying $NODE_TYPE node for chain $CHAIN_ID"
+
+# Clone chains repository
+git clone https://github.com/mezo-org/chains.git
+cd chains
+
+# Copy configuration
+cp configs/$CHAIN_ID/config.toml ~/.mezod/config/
+cp configs/$CHAIN_ID/app.toml ~/.mezod/config/
+
+# Initialize node
+mezod init $NODE_TYPE --chain-id $CHAIN_ID
+
+# Start node
+mezod start
+```
+
+## Security Configuration
+
+### Network Security
+
+Firewall rules for securing your node.
+
+```bash firewall-setup.sh
+# Allow necessary ports
+ufw allow 26656/tcp  # P2P
+ufw allow 26657/tcp  # RPC
+ufw allow 1317/tcp   # API
+ufw allow 8545/tcp   # EVM RPC
+
+# Restrict RPC access to trusted IPs
+iptables -A INPUT -p tcp --dport 26657 -s TRUSTED_IP -j ACCEPT
+iptables -A INPUT -p tcp --dport 26657 -j DROP
+```
+
+### SSL/TLS Configuration
+
+```toml app.toml
+[api]
+tls_cert_file = "/path/to/cert.pem"
+tls_key_file = "/path/to/key.pem"
+```
+
+## Monitoring
+
+### Prometheus Configuration
+
+Set up Prometheus monitoring for your Mezo node.
+
+```yaml prometheus.yml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'mezod-mainnet'
+    static_configs:
+      - targets: ['rpc.mezo.org:26660']
+    metrics_path: /metrics
+
+  - job_name: 'mezod-testnet'
+    static_configs:
+      - targets: ['testnet-rpc.mezo.org:26660']
+    metrics_path: /metrics
+```
+
+## Troubleshooting
+
+<CardGroup cols={2}>
+  <Card title="Configuration Errors" icon="exclamation-triangle">
+    Validate and test your configuration files
+  </Card>
+  <Card title="Network Connectivity" icon="wifi">
+    Check RPC connectivity and peer connections
+  </Card>
+</CardGroup>
+
+### Common Issues
+
+**Configuration Validation:**
+```bash
+# Check configuration syntax
+mezod config validate
+
+# Test configuration
+mezod start --dry-run
+```
+
+**Network Connectivity:**
+```bash
+# Test RPC connectivity
+curl -s http://localhost:26657/status | jq
+
+# Check peer connections
+mezod tendermint show-peers
+```
+
+**Genesis Issues:**
+```bash
+# Validate genesis file
+mezod validate-genesis
+
+# Reset with new genesis
+mezod tendermint unsafe-reset-all
+```
+
+<Note>
+Always refer to the latest configurations in the [chains repository](https://github.com/mezo-org/chains.git) for up-to-date network parameters and endpoints.
+</Note>
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="Chains Repository" icon="github" href="https://github.com/mezo-org/chains.git">
+    Configuration files and network parameters
+  </Card>
+  <Card title="Validator Kit" icon="server" href="/developers/nodes/validator-kit">
+    Complete validator setup guide
+  </Card>
+  <Card title="Mezo Discord" icon="discord" href="https://discord.com/invite/mezo">
+    Join the community for support
+  </Card>
+  <Card title="FAQ" icon="question" href="/resources/faqs">
+    Frequently asked questions
+  </Card>
+</CardGroup>
